@@ -12,6 +12,7 @@ namespace Interaction.Cars
         public Camera mainCamera;
         public Rigidbody sphere;
         public float forwardAcceleration = 7f;
+        public float forwardAccelerationOfftrack = 2f;
         public float reverseAcceleration = 6f;
         public float turnStrength = 180f;
         public float gravityForce = 10f;
@@ -162,6 +163,10 @@ namespace Interaction.Cars
             if (!hitTrack)
             {
                 _warningTimer -= Time.fixedDeltaTime;
+                if (Mathf.Abs(_speedInput) > 0)
+                {
+                    _speedInput /= 3f;
+                }
             }
             else
             {
