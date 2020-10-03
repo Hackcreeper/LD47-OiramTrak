@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,52 +6,52 @@ namespace Interaction.Cars
 {
     public class LocalCar : Car
     {
-        public List<AxleInfo> axleInfos;
-        public float maxMotorTorque = 800;
-        public float maxBrakeTorque = 1600;
-        public float maxSteeringAngle = 30;
-        public float maxSpeed = 80;
         public Camera mainCamera;
+        public Rigidbody sphere;
+        public float forwardAcceleration = 7f;
+        public float reverseAcceleration = 6f;
+        public float turnStrength = 180f;
+        public float gravityForce = 10f;
+        public LayerMask groundMask;
+        public float groundRayLength = .5f;
+        public Transform groundRaySource;
+        public float dragGrounded = 3f;
 
-        private Rigidbody _rigidbody;
         private PlayerInput _playerInput;
-        private Vector2 _moveVector;
-        private float _speedAmount;
-        private bool _reverse;
-        private bool _braking;
         private PlayerInfo _player;
+        private Vector2 _movement;
+        private float _speedAmount;
+        private float _breakAmount;
+        private float _speedInput;
+        private float _turnInput;
+        private bool _grounded;
 
         private void Awake()
         {
-            // DiContainer.Instance.Register("main_car", this);
-
-            _rigidbody = GetComponent<Rigidbody>();
             _playerInput = GetComponent<PlayerInput>();
+        }
+
+        private void Start()
+        {
+            sphere.transform.parent = null;
         }
 
         public void Init(PlayerInfo player)
         {
             _player = player;
-            
-            // Keyboard&Mouse
-            
-            
-            _playerInput.SwitchCurrentControlScheme(
-                _player.Device
-                // _controlType == ControlType.Keyboard ? "Keyboard&Mouse" : "Gamepad"
-            );
+            _playerInput.SwitchCurrentControlScheme(_player.Device);
         }
-        
+
         // ReSharper disable once UnusedMember.Global
         public void OnMove(InputAction.CallbackContext context)
         {
-            _moveVector = context.ReadValue<Vector2>();
+            _movement = context.ReadValue<Vector2>();
         }
 
         // ReSharper disable once UnusedMember.Global
         public void OnBrake(InputAction.CallbackContext context)
         {
-            _braking = context.ReadValueAsButton();
+            _breakAmount = context.ReadValue<float>();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -61,88 +60,61 @@ namespace Interaction.Cars
             _speedAmount = context.ReadValue<float>();
         }
 
-        private float GetMotorSpeed()
+        private void Update()
         {
-            if (_reverse)
+            _speedInput = 0f;
+            var forwardMovement = _movement.y;
+            if (_player.Type == ControlType.Controller)
             {
-                return maxMotorTorque * -1;
+                forwardMovement = _speedAmount - _breakAmount;
+            }
+            
+            if (forwardMovement > 0)
+            {
+                _speedInput = forwardMovement * forwardAcceleration * 1000f;
+            }
+            else if (forwardMovement < 0)
+            {
+                _speedInput = forwardMovement * reverseAcceleration * 1000f;
             }
 
-            if (_player.Type == ControlType.Keyboard)
+            if (_grounded)
             {
-                return maxMotorTorque * _moveVector.y;
+                _turnInput = _movement.x * turnStrength * Time.deltaTime * forwardMovement;
+                transform.rotation = Quaternion.Euler(
+                    transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
+                );
             }
 
-            return maxMotorTorque * _speedAmount;
-        }
-
-        private float GetSteeringAngle()
-        {
-            return maxSteeringAngle * _moveVector.x;
-        }
-
-        private void HandleBrake(AxleInfo axleInfo)
-        {
-            if (_braking)
-            {
-                if (!_reverse)
-                {
-                    axleInfo.leftWheel.brakeTorque = maxBrakeTorque;
-                    axleInfo.rightWheel.brakeTorque = maxBrakeTorque;
-                }
-
-                if (_rigidbody.velocity.sqrMagnitude < 0.8f)
-                {
-                    _reverse = true;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.brakeTorque = 0;   
-                }
-
-                return;
-            }
-
-            axleInfo.leftWheel.brakeTorque = 0;
-            axleInfo.rightWheel.brakeTorque = 0;
-            _reverse = false;
+            transform.position = sphere.transform.position;
         }
 
         private void FixedUpdate()
         {
-            var steering = GetSteeringAngle();
+            _grounded = false;
+            RaycastHit hit;
 
-            var speed = _rigidbody.velocity.sqrMagnitude;
-
-            foreach (var axleInfo in axleInfos)
+            if (Physics.Raycast(groundRaySource.position, -transform.up, out hit, groundRayLength, groundMask))
             {
-                if (axleInfo.steering)
-                {
-                    axleInfo.leftWheel.steerAngle = steering;
-                    axleInfo.rightWheel.steerAngle = steering;
-                }
+                _grounded = true;
+                transform.rotation = Quaternion.FromToRotation(
+                    transform.up, hit.normal
+                ) * transform.rotation;
+            }
 
-                HandleBrake(axleInfo);
+            if (_grounded)
+            {
+                sphere.drag = dragGrounded;
 
-                var motor = GetMotorSpeed();
-                Debug.Log(motor);
-
-                if (axleInfo.motor && speed < maxSpeed && motor >= 0.1f)
+                if (Mathf.Abs(_speedInput) > 0)
                 {
-                    axleInfo.leftWheel.motorTorque = motor;
-                    axleInfo.rightWheel.motorTorque = motor;
+                    sphere.AddForce(transform.forward * _speedInput);
                 }
-                else if (motor <= 0.01f)
-                {
-                    Debug.Log("Kill");
-                    axleInfo.leftWheel.motorTorque = 0;
-                    axleInfo.rightWheel.motorTorque = 0;
-                    axleInfo.leftWheel.brakeTorque = maxMotorTorque * 2f;
-                    axleInfo.rightWheel.brakeTorque = maxMotorTorque * 2f;
-                }
-                else if (speed >= maxSpeed)
-                {
-                    axleInfo.leftWheel.motorTorque = 0;
-                    axleInfo.rightWheel.motorTorque = 0;
-                }
+            }
+            else
+            {
+                sphere.drag = .1f;
+                sphere.AddForce(Vector3.up * -gravityForce * 100f);
             }
         }
     }
