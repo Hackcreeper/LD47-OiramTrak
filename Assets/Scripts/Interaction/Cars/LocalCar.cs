@@ -8,11 +8,11 @@ namespace Interaction.Cars
     public class LocalCar : Car
     {
         public List<AxleInfo> axleInfos;
-        public ControlType controlType = ControlType.Keyboard;
         public float maxMotorTorque = 800;
         public float maxBrakeTorque = 1600;
         public float maxSteeringAngle = 30;
         public float maxSpeed = 80;
+        public Camera mainCamera;
 
         private Rigidbody _rigidbody;
         private PlayerInput _playerInput;
@@ -20,30 +20,42 @@ namespace Interaction.Cars
         private float _speedAmount;
         private bool _reverse;
         private bool _braking;
+        private PlayerInfo _player;
 
         private void Awake()
         {
-            DiContainer.Instance.Register("main_car", this);
+            // DiContainer.Instance.Register("main_car", this);
 
             _rigidbody = GetComponent<Rigidbody>();
             _playerInput = GetComponent<PlayerInput>();
-
-            // Keyboard&Mouse
-            _playerInput.SwitchCurrentControlScheme(
-                controlType == ControlType.Keyboard ? "Keyboard&Mouse" : "Gamepad"
-            );
         }
 
+        public void Init(PlayerInfo player)
+        {
+            _player = player;
+            
+            // Keyboard&Mouse
+            
+            
+            _playerInput.SwitchCurrentControlScheme(
+                _player.Device
+                // _controlType == ControlType.Keyboard ? "Keyboard&Mouse" : "Gamepad"
+            );
+        }
+        
+        // ReSharper disable once UnusedMember.Global
         public void OnMove(InputAction.CallbackContext context)
         {
             _moveVector = context.ReadValue<Vector2>();
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void OnBrake(InputAction.CallbackContext context)
         {
             _braking = context.ReadValueAsButton();
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void OnSpeed(InputAction.CallbackContext context)
         {
             _speedAmount = context.ReadValue<float>();
@@ -56,7 +68,7 @@ namespace Interaction.Cars
                 return maxMotorTorque * -1;
             }
 
-            if (controlType == ControlType.Keyboard)
+            if (_player.Type == ControlType.Keyboard)
             {
                 return maxMotorTorque * _moveVector.y;
             }
