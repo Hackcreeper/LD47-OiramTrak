@@ -5,18 +5,22 @@ namespace Interaction
 {
     public class CameraFollow : MonoBehaviour
     {
-        private Car _car;
-
+        private Transform _target;
+        
         private void Start()
         {
-            _car = DiContainer.Instance.GetByName<Car>("main_car");
+            _target = transform.parent;
+            transform.parent = null;
+        }
 
-            Transform transform1;
-            (transform1 = transform).SetParent(_car.transform);
-            transform1.localPosition = new Vector3(0, 6.2f, -6f);
-            transform1.rotation = Quaternion.Euler(
-                38,
-                0,
+        private void Update()
+        {
+            var rotation = Quaternion.Euler(0, _target.rotation.eulerAngles.y, 0);
+            
+            transform.position = _target.position + (rotation * new Vector3(0f, 6.2f, -6f));
+            transform.rotation = Quaternion.Euler(
+                34,
+                _target.rotation.eulerAngles.y,
                 0
             );
         }

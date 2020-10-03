@@ -1,5 +1,7 @@
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using Data;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,52 +9,79 @@ namespace Interaction.Cars
 {
     public class LocalCar : Car
     {
-        public List<AxleInfo> axleInfos;
-        public float maxMotorTorque = 800;
-        public float maxBrakeTorque = 1600;
-        public float maxSteeringAngle = 30;
-        public float maxSpeed = 80;
         public Camera mainCamera;
+        public Rigidbody sphere;
+        public float forwardAcceleration = 7f;
+        public float forwardAccelerationOfftrack = 2f;
+        public float reverseAcceleration = 6f;
+        public float turnStrength = 180f;
+        public float gravityForce = 10f;
+        public LayerMask groundMask;
+        public LayerMask trackMask;
+        public float groundRayLength = .5f;
+        public Transform groundRaySource;
+        public Transform[] trackRaySources;
+        public float dragGrounded = 3f;
+        public TextMeshPro resetWarning;
 
-        private Rigidbody _rigidbody;
         private PlayerInput _playerInput;
-        private Vector2 _moveVector;
-        private float _speedAmount;
-        private bool _reverse;
-        private bool _braking;
         private PlayerInfo _player;
+        private Vector2 _movement;
+        private float _speedAmount;
+        private float _breakAmount;
+        private float _speedInput;
+        private float _turnInput;
+        private bool _grounded;
+        private float _warningTimer = 2f;
+        private GameObject[] _waypoints;
+        private int _nextWaypoint = 0;
 
         private void Awake()
         {
-            // DiContainer.Instance.Register("main_car", this);
-
-            _rigidbody = GetComponent<Rigidbody>();
             _playerInput = GetComponent<PlayerInput>();
         }
 
-        public void Init(PlayerInfo player)
+        private void Start()
+        {
+            sphere.transform.parent = null;
+            sphere.GetComponent<CarSphere>().RegisterPlayer(this);
+        }
+
+        public void Init(PlayerInfo player, GameObject[] waypoints)
         {
             _player = player;
+            _playerInput.SwitchCurrentControlScheme(_player.Device);
             
-            // Keyboard&Mouse
+            resetWarning.text = player.Type == ControlType.Keyboard
+                ? "Press <b>[R]</b> to reset"
+                : "Press <b>[Y]</b> to reset";
+
+            _waypoints = waypoints;
+            sphere.gameObject.layer = gameObject.layer;
             
-            
-            _playerInput.SwitchCurrentControlScheme(
-                _player.Device
-                // _controlType == ControlType.Keyboard ? "Keyboard&Mouse" : "Gamepad"
-            );
+            EnableActiveWaypoint();
         }
-        
+
+        private void EnableActiveWaypoint()
+        {
+            foreach (var waypoint in _waypoints)
+            {
+                waypoint.SetActive(false);
+            }
+
+            _waypoints[_nextWaypoint].SetActive(true);
+        }
+
         // ReSharper disable once UnusedMember.Global
         public void OnMove(InputAction.CallbackContext context)
         {
-            _moveVector = context.ReadValue<Vector2>();
+            _movement = context.ReadValue<Vector2>();
         }
 
         // ReSharper disable once UnusedMember.Global
         public void OnBrake(InputAction.CallbackContext context)
         {
-            _braking = context.ReadValueAsButton();
+            _breakAmount = context.ReadValue<float>();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -61,80 +90,123 @@ namespace Interaction.Cars
             _speedAmount = context.ReadValue<float>();
         }
 
-        private float GetMotorSpeed()
+        // ReSharper disable once UnusedMember.Global
+        public void OnReset(InputAction.CallbackContext context)
         {
-            if (_reverse)
+            if (!context.started)
             {
-                return maxMotorTorque * -1;
-            }
-
-            if (_player.Type == ControlType.Keyboard)
-            {
-                return maxMotorTorque * _moveVector.y;
-            }
-
-            return maxMotorTorque * _speedAmount;
-        }
-
-        private float GetSteeringAngle()
-        {
-            return maxSteeringAngle * _moveVector.x;
-        }
-
-        private void HandleBrake(AxleInfo axleInfo)
-        {
-            if (_braking)
-            {
-                if (!_reverse)
-                {
-                    axleInfo.leftWheel.brakeTorque = maxBrakeTorque;
-                    axleInfo.rightWheel.brakeTorque = maxBrakeTorque;
-                }
-
-                if (_rigidbody.velocity.sqrMagnitude < 0.8f)
-                {
-                    _reverse = true;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.brakeTorque = 0;   
-                }
-
                 return;
             }
 
-            axleInfo.leftWheel.brakeTorque = 0;
-            axleInfo.rightWheel.brakeTorque = 0;
-            _reverse = false;
+            if (_nextWaypoint == 0)
+            {
+                // tbd: spawn before start
+                return;
+            }
+
+            var position = _waypoints[_nextWaypoint - 1].transform.position;
+            sphere.transform.position = position + new Vector3(0, 2, 0);
+            transform.rotation = _waypoints[_nextWaypoint - 1].transform.rotation;
+            transform.Rotate(0, 90, 0);
+        }
+        
+        private void Update()
+        {
+            HandleInput();
+            HandleWarning();
+        }
+
+        private void HandleWarning()
+        {
+            resetWarning.gameObject.SetActive(_warningTimer <= 0f);
+        }
+
+        private void HandleInput()
+        {
+            _speedInput = 0f;
+            var forwardMovement = _movement.y;
+            if (_player.Type == ControlType.Controller)
+            {
+                forwardMovement = _speedAmount - _breakAmount;
+            }
+
+            if (forwardMovement > 0)
+            {
+                _speedInput = forwardMovement * forwardAcceleration * 1000f;
+            }
+            else if (forwardMovement < 0)
+            {
+                _speedInput = forwardMovement * reverseAcceleration * 1000f;
+            }
+
+            if (_grounded)
+            {
+                _turnInput = _movement.x * turnStrength * Time.deltaTime * forwardMovement;
+                transform.rotation = Quaternion.Euler(
+                    transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
+                );
+            }
+
+            transform.position = sphere.transform.position;
         }
 
         private void FixedUpdate()
         {
-            var steering = GetSteeringAngle();
+            CheckTrack();
+            Move();
+        }
 
-            var speed = _rigidbody.velocity.sqrMagnitude;
+        private void CheckTrack()
+        {
+            var hitTrack = trackRaySources.Any(source => Physics.Raycast(source.position, -transform.up, out _, groundRayLength * 10, trackMask));
 
-            foreach (var axleInfo in axleInfos)
+            if (!hitTrack)
             {
-                if (axleInfo.steering)
+                _warningTimer -= Time.fixedDeltaTime;
+                if (Mathf.Abs(_speedInput) > 0)
                 {
-                    axleInfo.leftWheel.steerAngle = steering;
-                    axleInfo.rightWheel.steerAngle = steering;
-                }
-
-                HandleBrake(axleInfo);
-
-                var motor = GetMotorSpeed();
-
-                if (axleInfo.motor && speed < maxSpeed)
-                {
-                    axleInfo.leftWheel.motorTorque = motor;
-                    axleInfo.rightWheel.motorTorque = motor;
-                }
-                else if (speed >= maxSpeed)
-                {
-                    axleInfo.leftWheel.motorTorque = 0;
-                    axleInfo.rightWheel.motorTorque = 0;
+                    _speedInput /= 3f;
                 }
             }
+            else
+            {
+                _warningTimer = 2f;
+            }
+        }
+
+        private void Move()
+        {
+            _grounded = false;
+            RaycastHit hit;
+
+            if (Physics.Raycast(groundRaySource.position, -transform.up, out hit, groundRayLength, groundMask))
+            {
+                _grounded = true;
+                transform.rotation = Quaternion.FromToRotation(
+                    transform.up, hit.normal
+                ) * transform.rotation;
+            }
+
+            if (_grounded)
+            {
+                sphere.drag = dragGrounded;
+
+                if (Mathf.Abs(_speedInput) > 0)
+                {
+                    sphere.AddForce(transform.forward * _speedInput);
+                }
+            }
+            else
+            {
+                sphere.drag = .1f;
+                sphere.AddForce(Vector3.up * -gravityForce * 100f);
+            }
+        }
+
+        public void CheckedWaypoint()
+        {
+            _nextWaypoint++;
+            EnableActiveWaypoint();
         }
     }
 }
