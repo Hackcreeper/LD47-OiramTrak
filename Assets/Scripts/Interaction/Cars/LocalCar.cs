@@ -123,11 +123,20 @@ namespace Interaction.Cars
                 HandleBrake(axleInfo);
 
                 var motor = GetMotorSpeed();
+                Debug.Log(motor);
 
-                if (axleInfo.motor && speed < maxSpeed)
+                if (axleInfo.motor && speed < maxSpeed && motor >= 0.1f)
                 {
                     axleInfo.leftWheel.motorTorque = motor;
                     axleInfo.rightWheel.motorTorque = motor;
+                }
+                else if (motor <= 0.01f)
+                {
+                    Debug.Log("Kill");
+                    axleInfo.leftWheel.motorTorque = 0;
+                    axleInfo.rightWheel.motorTorque = 0;
+                    axleInfo.leftWheel.brakeTorque = maxMotorTorque * 2f;
+                    axleInfo.rightWheel.brakeTorque = maxMotorTorque * 2f;
                 }
                 else if (speed >= maxSpeed)
                 {
