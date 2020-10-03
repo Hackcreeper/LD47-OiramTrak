@@ -1,5 +1,4 @@
-﻿using Interaction.Cars;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Interaction
 {
