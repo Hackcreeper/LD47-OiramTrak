@@ -89,6 +89,26 @@ namespace Interaction.Cars
             _speedAmount = context.ReadValue<float>();
         }
 
+        // ReSharper disable once UnusedMember.Global
+        public void OnReset(InputAction.CallbackContext context)
+        {
+            if (!context.started)
+            {
+                return;
+            }
+
+            if (_nextWaypoint == 0)
+            {
+                // tbd: spawn before start
+                return;
+            }
+
+            var position = _waypoints[_nextWaypoint - 1].transform.position;
+            sphere.transform.position = position + new Vector3(0, 2, 0);
+            transform.rotation = _waypoints[_nextWaypoint - 1].transform.rotation;
+            transform.Rotate(0, 90, 0);
+        }
+        
         private void Update()
         {
             HandleInput();
