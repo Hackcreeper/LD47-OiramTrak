@@ -12,6 +12,11 @@ namespace Interaction
         public CameraSizes[] sizesTwoPlayers;
         public CameraSizes[] sizesThreePlayers;
         public CameraSizes[] sizesFourPlayers;
+        public GameObject waypointPrefab;
+        public LayerMask layerMaskPlayer1;
+        public LayerMask layerMaskPlayer2;
+        public LayerMask layerMaskPlayer3;
+        public LayerMask layerMaskPlayer4;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
@@ -36,10 +41,36 @@ namespace Interaction
 
                 var car = Instantiate(carPrefab);
                 car.transform.position = spawner.transform.position;
+                car.layer = LayerMask.NameToLayer("Player" + (id + 1) + "_Car");
                 var localCar = car.GetComponent<LocalCar>();
-                localCar.Init(player.Value);
+                var waypoints = SpawnWaypoints();
+                localCar.Init(player.Value, waypoints);
                 localCar.SetName(id + 1);
 
+                switch (id)
+                {
+                    case 0:
+                        localCar.mainCamera.cullingMask = layerMaskPlayer1;
+                        break;
+
+                    case 1:
+                        localCar.mainCamera.cullingMask = layerMaskPlayer2;
+                        break;
+                    
+                    case 2:
+                        localCar.mainCamera.cullingMask = layerMaskPlayer3;
+                        break;
+                    
+                    case 3:
+                        localCar.mainCamera.cullingMask = layerMaskPlayer4;
+                        break;
+                }
+                
+                foreach (var waypoint in waypoints)
+                {
+                    waypoint.layer = LayerMask.NameToLayer("Player" + (id+1));
+                }
+                
                 if (total == 2)
                 {
                     SetCamera(localCar.mainCamera, sizesTwoPlayers[id]);
@@ -57,6 +88,18 @@ namespace Interaction
                     SetCamera(localCar.mainCamera, sizesFourPlayers[id]);
                 }
             }
+        }
+
+        private GameObject[] SpawnWaypoints()
+        {
+            var waypoints = Instantiate(waypointPrefab);
+            var points = new GameObject[waypoints.transform.childCount];
+            for (var i = 0; i < waypoints.transform.childCount; i++)
+            {
+                points[i] = waypoints.transform.GetChild(i).gameObject;
+            }
+
+            return points;
         }
 
         private static void SetCamera(Camera cam, CameraSizes sizes)

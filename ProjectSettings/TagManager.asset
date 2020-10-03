@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - CarSpawner
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -16,15 +17,15 @@ TagManager:
   - 
   - Car
   - Ground
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Track
+  - Player1
+  - Player2
+  - Player3
+  - Player4
+  - Player1_Car
+  - Player2_Car
+  - Player3_Car
+  - Player4_Car
   - 
   - 
   - 

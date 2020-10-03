@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using Data;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,9 +16,12 @@ namespace Interaction.Cars
         public float turnStrength = 180f;
         public float gravityForce = 10f;
         public LayerMask groundMask;
+        public LayerMask trackMask;
         public float groundRayLength = .5f;
         public Transform groundRaySource;
+        public Transform[] trackRaySources;
         public float dragGrounded = 3f;
+        public TextMeshPro resetWarning;
 
         private PlayerInput _playerInput;
         private PlayerInfo _player;
@@ -25,6 +31,9 @@ namespace Interaction.Cars
         private float _speedInput;
         private float _turnInput;
         private bool _grounded;
+        private float _warningTimer = 2f;
+        private GameObject[] _waypoints;
+        private int _nextWaypoint = 0;
 
         private void Awake()
         {
@@ -34,12 +43,32 @@ namespace Interaction.Cars
         private void Start()
         {
             sphere.transform.parent = null;
+            sphere.GetComponent<CarSphere>().RegisterPlayer(this);
         }
 
-        public void Init(PlayerInfo player)
+        public void Init(PlayerInfo player, GameObject[] waypoints)
         {
             _player = player;
             _playerInput.SwitchCurrentControlScheme(_player.Device);
+            
+            resetWarning.text = player.Type == ControlType.Keyboard
+                ? "Press <b>[R]</b> to reset"
+                : "Press <b>[Y]</b> to reset";
+
+            _waypoints = waypoints;
+            sphere.gameObject.layer = gameObject.layer;
+            
+            EnableActiveWaypoint();
+        }
+
+        private void EnableActiveWaypoint()
+        {
+            foreach (var waypoint in _waypoints)
+            {
+                waypoint.SetActive(false);
+            }
+
+            _waypoints[_nextWaypoint].SetActive(true);
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -62,13 +91,24 @@ namespace Interaction.Cars
 
         private void Update()
         {
+            HandleInput();
+            HandleWarning();
+        }
+
+        private void HandleWarning()
+        {
+            resetWarning.gameObject.SetActive(_warningTimer <= 0f);
+        }
+
+        private void HandleInput()
+        {
             _speedInput = 0f;
             var forwardMovement = _movement.y;
             if (_player.Type == ControlType.Controller)
             {
                 forwardMovement = _speedAmount - _breakAmount;
             }
-            
+
             if (forwardMovement > 0)
             {
                 _speedInput = forwardMovement * forwardAcceleration * 1000f;
@@ -90,6 +130,26 @@ namespace Interaction.Cars
         }
 
         private void FixedUpdate()
+        {
+            CheckTrack();
+            Move();
+        }
+
+        private void CheckTrack()
+        {
+            var hitTrack = trackRaySources.Any(source => Physics.Raycast(source.position, -transform.up, out _, groundRayLength * 10, trackMask));
+
+            if (!hitTrack)
+            {
+                _warningTimer -= Time.fixedDeltaTime;
+            }
+            else
+            {
+                _warningTimer = 2f;
+            }
+        }
+
+        private void Move()
         {
             _grounded = false;
             RaycastHit hit;
@@ -116,6 +176,12 @@ namespace Interaction.Cars
                 sphere.drag = .1f;
                 sphere.AddForce(Vector3.up * -gravityForce * 100f);
             }
+        }
+
+        public void CheckedWaypoint()
+        {
+            _nextWaypoint++;
+            EnableActiveWaypoint();
         }
     }
 }
