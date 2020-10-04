@@ -36,7 +36,7 @@ namespace Interaction.Cars
         private float _warningTimer = 2f;
         private GameObject[] _waypoints;
         private int _nextWaypoint = 0;
-        private int _round = 1;
+        private int _round = 3;
         private LeaderboardPlayer _leaderboardEntry;
         private bool _finished = false;
         private float _time = 0f;
@@ -125,6 +125,12 @@ namespace Interaction.Cars
             transform.Rotate(0, 90, 0);
 
             StartCoroutine(Block());
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public void OnRestart(InputAction.CallbackContext context)
+        {
+            DiContainer.Instance.GetByName<WinScreen>("Win").OnRestart(context);
         }
 
         private void Update()
@@ -289,10 +295,10 @@ namespace Interaction.Cars
 
         public void NextRound()
         {
-            if (_nextWaypoint < _waypoints.Length)
-            {
-                return;
-            }
+            // if (_nextWaypoint < _waypoints.Length)
+            // {
+            //     return;
+            // }
 
             if (_round == 3)
             {
@@ -300,12 +306,12 @@ namespace Interaction.Cars
                 _movement = Vector2.zero;
                 DisableAllWaypoints();
                 _leaderboardEntry.Lock();
-                
+
                 DiContainer.Instance.GetByName<GameFlow>("Game").CheckFinish();
-                
+
                 return;
             }
-            
+
             _round++;
             _nextWaypoint = 0;
             EnableActiveWaypoint();

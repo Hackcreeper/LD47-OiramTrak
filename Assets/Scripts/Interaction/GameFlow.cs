@@ -14,6 +14,8 @@ namespace Interaction
 {
     public class GameFlow : MonoBehaviour
     {
+        public bool IsFinished { get; private set; }
+        
         public GameObject carPrefab;
         public CameraSizes[] sizesTwoPlayers;
         public CameraSizes[] sizesThreePlayers;
@@ -245,6 +247,7 @@ namespace Interaction
                 return;
             }
 
+            IsFinished = true;
             winScreen.SetActive(true);
             
             // Create all leaderboard entries
@@ -256,9 +259,9 @@ namespace Interaction
                 var seconds = Mathf.FloorToInt(entry.NeededTime);
                 var minutes = Mathf.FloorToInt(seconds / 60f);
                 seconds -= minutes * 60;
-
+                
                 component.positionLabel.text = entry.positionLabel.text;
-                component.nameLabel.text = $"Player {entry.PlayerId} ({minutes}:{seconds})";
+                component.nameLabel.text = $"Player {entry.PlayerId} ({minutes:00}:{seconds:00})";
             });
             
             verticalLayoutGroup.CalculateLayoutInputVertical();

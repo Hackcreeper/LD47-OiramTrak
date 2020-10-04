@@ -57,13 +57,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1837085794}
-  m_LocalRotation: {x: 0.32556805, y: 0, z: 0, w: 0.9455186}
-  m_LocalPosition: {x: 0, y: 6.2, z: -6}
+  m_LocalRotation: {x: 0.23976281, y: -0, z: 0.000000022351736, w: 0.9708315}
+  m_LocalPosition: {x: -0, y: 2.28, z: -3.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8366794849776275525}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 38, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 27.745, y: 0, z: 0}
 --- !u!20 &1837085797
 Camera:
   m_ObjectHideFlags: 0
@@ -397,6 +397,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 159fa138-95f7-47f4-96d1-b072af6d521a
     m_ActionName: Player/New action
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1954169623508727349}
+        m_TargetAssemblyTypeName: Interaction.Cars.LocalCar, Assembly-CSharp
+        m_MethodName: OnRestart
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c23bc44b-4443-49b5-83c1-1f77adceb651
+    m_ActionName: Player/Restart[/Keyboard/space,/XboxGamepadMacOS/buttonWest,/XboxGamepadMacOS/buttonWest]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -489,7 +505,7 @@ RectTransform:
   m_GameObject: {fileID: 2660687309849105952}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 10990506912429054}
   m_Father: {fileID: 8366794849776275525}
@@ -497,7 +513,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.2}
+  m_AnchoredPosition: {x: 0, y: 0.45000005}
   m_SizeDelta: {x: 20, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &282033642503138882

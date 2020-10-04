@@ -16,9 +16,9 @@ namespace Interaction
         {
             var rotation = Quaternion.Euler(0, _target.rotation.eulerAngles.y, 0);
             
-            transform.position = _target.position + (rotation * new Vector3(0f, 6.2f, -6f));
+            transform.position = _target.position + (rotation * new Vector3(0f, 2.28f, -3.73f));
             transform.rotation = Quaternion.Euler(
-                34,
+                27.74f,
                 _target.rotation.eulerAngles.y,
                 0
             );
