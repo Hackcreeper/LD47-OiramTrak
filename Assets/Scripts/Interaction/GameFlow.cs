@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Data;
 using Interaction.Cars;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,14 +19,46 @@ namespace Interaction
         public LayerMask layerMaskPlayer2;
         public LayerMask layerMaskPlayer3;
         public LayerMask layerMaskPlayer4;
+        public TextMeshProUGUI roundCounter;
+        public TextMeshProUGUI roundTitle;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
+        private readonly List<LocalCar> _cars = new List<LocalCar>();
 
         private void Start()
         {
             InitPlayers();
             SpawnCars();
+            StartCoroutine(StartRound());
+        }
+
+        private IEnumerator StartRound()
+        {
+            roundCounter.text = "3";
+            yield return new WaitForSeconds(1);
+            
+            roundCounter.text = "2";
+            yield return new WaitForSeconds(1);
+            
+            roundCounter.text = "1";
+            yield return new WaitForSeconds(1);
+
+            roundCounter.text = "Go!";
+            _cars.ForEach(car => car.blocked = false);
+
+            var alpha = roundCounter.color.a;
+            while (alpha > 0f)
+            {
+                alpha = roundCounter.color.a - 0.8f * Time.deltaTime;
+                
+                roundCounter.color = new Color(roundCounter.color.r, roundCounter.color.g, roundCounter.color.b, alpha);
+                roundTitle.color = new Color(roundTitle.color.r, roundTitle.color.g, roundTitle.color.b, alpha);
+                
+                yield return new WaitForEndOfFrame();
+            }
+            
+            roundCounter.gameObject.SetActive(false);
         }
 
         private void SpawnCars()
@@ -46,6 +80,8 @@ namespace Interaction
                 var waypoints = SpawnWaypoints();
                 localCar.Init(player.Value, waypoints);
                 localCar.SetName(id + 1);
+                
+                _cars.Add(localCar);
 
                 switch (id)
                 {

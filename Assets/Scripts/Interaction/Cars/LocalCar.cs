@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Linq;
 using Data;
 using TMPro;
@@ -12,7 +12,6 @@ namespace Interaction.Cars
         public Camera mainCamera;
         public Rigidbody sphere;
         public float forwardAcceleration = 7f;
-        public float forwardAccelerationOfftrack = 2f;
         public float reverseAcceleration = 6f;
         public float turnStrength = 180f;
         public float gravityForce = 10f;
@@ -23,6 +22,7 @@ namespace Interaction.Cars
         public Transform[] trackRaySources;
         public float dragGrounded = 3f;
         public TextMeshPro resetWarning;
+        public bool blocked = true;
 
         private PlayerInput _playerInput;
         private PlayerInfo _player;
@@ -93,7 +93,7 @@ namespace Interaction.Cars
         // ReSharper disable once UnusedMember.Global
         public void OnReset(InputAction.CallbackContext context)
         {
-            if (!context.started)
+            if (!context.started || blocked)
             {
                 return;
             }
@@ -108,12 +108,27 @@ namespace Interaction.Cars
             sphere.transform.position = position + new Vector3(0, 2, 0);
             transform.rotation = _waypoints[_nextWaypoint - 1].transform.rotation;
             transform.Rotate(0, 90, 0);
+
+            StartCoroutine(Block());
         }
         
         private void Update()
         {
+            if (blocked)
+            {
+                MoveToSphere();
+                return;
+            }
+            
             HandleInput();
             HandleWarning();
+
+            MoveToSphere();
+        }
+
+        private void MoveToSphere()
+        {
+            transform.position = sphere.transform.position;
         }
 
         private void HandleWarning()
@@ -146,12 +161,17 @@ namespace Interaction.Cars
                     transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
                 );
             }
-
-            transform.position = sphere.transform.position;
         }
 
         private void FixedUpdate()
         {
+            if (blocked)
+            {
+                sphere.velocity = Vector3.zero;
+                sphere.angularVelocity = Vector3.zero; 
+                return;
+            }
+            
             CheckTrack();
             Move();
         }
@@ -207,6 +227,13 @@ namespace Interaction.Cars
         {
             _nextWaypoint++;
             EnableActiveWaypoint();
+        }
+
+        public IEnumerator Block()
+        {
+            blocked = true;
+            yield return new WaitForSeconds(1.5f);
+            blocked = false;
         }
     }
 }
