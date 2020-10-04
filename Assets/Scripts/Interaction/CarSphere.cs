@@ -5,7 +5,7 @@ namespace Interaction
 {
     public class CarSphere : MonoBehaviour
     {
-        private LocalCar _car;
+        private Car _car;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -18,11 +18,10 @@ namespace Interaction
             if (other.CompareTag("Goal"))
             {
                 _car.NextRound();
-                return;
             }
         }
 
-        public void RegisterPlayer(LocalCar car)
+        public void RegisterPlayer(Car car)
         {
             _car = car;
         }

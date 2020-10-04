@@ -14,8 +14,9 @@ namespace Interaction
     public class GameFlow : MonoBehaviour
     {
         public bool IsFinished { get; private set; }
-        
+
         public GameObject carPrefab;
+        public GameObject botCarPrefab;
         public CameraSizes[] sizesTwoPlayers;
         public CameraSizes[] sizesThreePlayers;
         public CameraSizes[] sizesFourPlayers;
@@ -43,18 +44,18 @@ namespace Interaction
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
-        private readonly List<LocalCar> _cars = new List<LocalCar>();
+        private readonly List<Car> _cars = new List<Car>();
         private Leaderboard _leaderboard;
 
         private void Awake()
         {
             DiContainer.Instance.Register("Game", this);
         }
-        
+
         private void Start()
         {
             _leaderboard = DiContainer.Instance.GetByName<Leaderboard>("Leaderboard");
-            
+
             InitPlayers();
             SpawnCars();
             StartCoroutine(StartRound());
@@ -64,7 +65,7 @@ namespace Interaction
         {
             roundCounter.text = "3";
             yield return new WaitForSeconds(1);
-            
+
             roundCounter.text = "2";
             redLight.SetActive(true);
 
@@ -75,11 +76,11 @@ namespace Interaction
                 inactiveLight,
                 redLightMaterial
             };
-            
+
             yield return new WaitForSeconds(1);
-            
+
             roundCounter.text = "1";
-            
+
             redLight.SetActive(false);
             yellowLight.SetActive(true);
 
@@ -90,11 +91,11 @@ namespace Interaction
                 yellowLightMaterial,
                 inactiveLight
             };
-            
+
             yield return new WaitForSeconds(1);
 
             roundCounter.text = "Go!";
-            
+
             yellowLight.SetActive(false);
             greenLight.SetActive(true);
 
@@ -105,20 +106,20 @@ namespace Interaction
                 inactiveLight,
                 inactiveLight
             };
-            
+
             _cars.ForEach(car => car.blocked = false);
 
             var alpha = roundCounter.color.a;
             while (alpha > 0f)
             {
                 alpha = roundCounter.color.a - 0.8f * Time.deltaTime;
-                
+
                 roundCounter.color = new Color(roundCounter.color.r, roundCounter.color.g, roundCounter.color.b, alpha);
                 roundTitle.color = new Color(roundTitle.color.r, roundTitle.color.g, roundTitle.color.b, alpha);
-                
+
                 yield return new WaitForEndOfFrame();
             }
-            
+
             roundCounter.gameObject.SetActive(false);
         }
 
@@ -126,7 +127,7 @@ namespace Interaction
         {
             _carSpawners = GameObject.FindGameObjectsWithTag("CarSpawner");
 
-            var total = _players.Count;
+            var total = _players.Sum(player => player.Value.IsPlayer ? 1 : 0);
 
             foreach (var player in _players)
             {
@@ -134,63 +135,66 @@ namespace Interaction
 
                 var spawner = _carSpawners[player.Key];
 
-                var car = Instantiate(carPrefab);
+                var car = Instantiate(player.Value.IsPlayer ? carPrefab : botCarPrefab);
                 car.transform.position = spawner.transform.position;
+
                 car.layer = LayerMask.NameToLayer("Player" + (id + 1) + "_Car");
-                var localCar = car.GetComponent<LocalCar>();
+
+                var carComp = car.GetComponent<Car>();
                 var waypoints = SpawnWaypoints();
-                localCar.Init(player.Value, waypoints);
-                localCar.SetName(id + 1);
-                
+
+                carComp.Init(player.Value, waypoints);
+                carComp.SetName(id + 1);
+
                 var entry = Instantiate(leaderboardPlayerPrefab);
                 var component = entry.GetComponent<LeaderboardPlayer>();
-                
-                component.SetData(player.Key + 1, player.Key + 1);
+
+                component.SetData(player.Key + 1, player.Key + 1, !player.Value.IsPlayer);
                 _leaderboard.Add(component);
-                
-                localCar.SetLeaderboardEntry(component);
-                
-                _cars.Add(localCar);
 
-                switch (id)
+                carComp.SetLeaderboardEntry(component);
+
+                _cars.Add(carComp);
+
+                if (player.Value.IsPlayer)
                 {
-                    case 0:
-                        localCar.mainCamera.cullingMask = layerMaskPlayer1;
-                        break;
+                    var localCar = car.GetComponent<LocalCar>();
+                    switch (id)
+                    {
+                        case 0:
+                            localCar.mainCamera.cullingMask = layerMaskPlayer1;
+                            break;
 
-                    case 1:
-                        localCar.mainCamera.cullingMask = layerMaskPlayer2;
-                        break;
-                    
-                    case 2:
-                        localCar.mainCamera.cullingMask = layerMaskPlayer3;
-                        break;
-                    
-                    case 3:
-                        localCar.mainCamera.cullingMask = layerMaskPlayer4;
-                        break;
+                        case 1:
+                            localCar.mainCamera.cullingMask = layerMaskPlayer2;
+                            break;
+
+                        case 2:
+                            localCar.mainCamera.cullingMask = layerMaskPlayer3;
+                            break;
+
+                        case 3:
+                            localCar.mainCamera.cullingMask = layerMaskPlayer4;
+                            break;
+                    }
+
+                    switch (total)
+                    {
+                        case 2:
+                            SetCamera(localCar.mainCamera, sizesTwoPlayers[id]);
+                            break;
+                        case 3:
+                            SetCamera(localCar.mainCamera, sizesThreePlayers[id]);
+                            break;
+                        case 4:
+                            SetCamera(localCar.mainCamera, sizesFourPlayers[id]);
+                            break;
+                    }
                 }
-                
+
                 foreach (var waypoint in waypoints)
                 {
-                    waypoint.layer = LayerMask.NameToLayer("Player" + (id+1));
-                }
-                
-                if (total == 2)
-                {
-                    SetCamera(localCar.mainCamera, sizesTwoPlayers[id]);
-                    continue;
-                }
-
-                if (total == 3)
-                {
-                    SetCamera(localCar.mainCamera, sizesThreePlayers[id]);
-                    continue;
-                }
-
-                if (total == 4)
-                {
-                    SetCamera(localCar.mainCamera, sizesFourPlayers[id]);
+                    waypoint.layer = LayerMask.NameToLayer("Player" + (id + 1));
                 }
             }
         }
@@ -224,15 +228,22 @@ namespace Interaction
             if (players == null)
             {
                 Debug.Log("You sneaky boi! Just started the game in editor right?! RIGHT?!");
-                
+
                 DiContainer.Instance.Register("rounds", 1);
 
                 players = new Dictionary<int, PlayerInfo>
                 {
                     {
-                        1, new PlayerInfo(
+                        0, new PlayerInfo(
                             Keyboard.current.device,
                             ControlType.Keyboard
+                        )
+                    },
+                    {
+                        1, new PlayerInfo(
+                            null,
+                            ControlType.Bot,
+                            false
                         )
                     }
                 };
@@ -250,7 +261,7 @@ namespace Interaction
 
             IsFinished = true;
             winScreen.SetActive(true);
-            
+
             // Create all leaderboard entries
             _leaderboard.GetEntries().ForEach(entry =>
             {
@@ -260,11 +271,11 @@ namespace Interaction
                 var seconds = Mathf.FloorToInt(entry.NeededTime);
                 var minutes = Mathf.FloorToInt(seconds / 60f);
                 seconds -= minutes * 60;
-                
+
                 component.positionLabel.text = entry.positionLabel.text;
                 component.nameLabel.text = $"Player {entry.PlayerId} ({minutes:00}:{seconds:00})";
             });
-            
+
             verticalLayoutGroup.CalculateLayoutInputVertical();
         }
     }

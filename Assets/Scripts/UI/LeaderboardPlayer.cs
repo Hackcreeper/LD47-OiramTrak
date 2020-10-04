@@ -17,6 +17,7 @@ namespace UI
         private Leaderboard _leaderboard;
         private int _round;
         private int _position;
+        private bool _bot;
 
         private void Start()
         {
@@ -37,9 +38,10 @@ namespace UI
             Render();
         }
 
-        public void SetData(int position, int playerId)
+        public void SetData(int position, int playerId, bool bot)
         {
             _position = position;
+            _bot = bot;
             PlayerId = playerId;
 
             Render();
@@ -68,9 +70,10 @@ namespace UI
             }
 
             var maxRounds = DiContainer.Instance.GetByName<int>("rounds");
+            var playerName = _bot ? "Bot" : "Player";
             
             positionLabel.text = positionString;
-            nameLabel.text = $"Player {PlayerId}   ({_round}/{maxRounds})";
+            nameLabel.text = $"{playerName} {PlayerId}   ({_round}/{maxRounds})";
         }
 
         public void UpdateScore(int score)
