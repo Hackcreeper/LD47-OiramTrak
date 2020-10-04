@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using Data;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -35,6 +36,8 @@ namespace Interaction.Cars
         private float _warningTimer = 2f;
         private GameObject[] _waypoints;
         private int _nextWaypoint = 0;
+        private int _round = 1;
+        private LeaderboardPlayer _leaderboardEntry;
 
         private void Awake()
         {
@@ -62,6 +65,11 @@ namespace Interaction.Cars
             EnableActiveWaypoint();
         }
 
+        public void SetLeaderboardEntry(LeaderboardPlayer entry)
+        {
+            _leaderboardEntry = entry;
+        }
+        
         private void EnableActiveWaypoint()
         {
             foreach (var waypoint in _waypoints)
@@ -114,6 +122,8 @@ namespace Interaction.Cars
         
         private void Update()
         {
+            CalculateScore();
+            
             if (blocked)
             {
                 MoveToSphere();
@@ -124,6 +134,12 @@ namespace Interaction.Cars
             HandleWarning();
 
             MoveToSphere();
+        }
+
+        private void CalculateScore()
+        {
+            _leaderboardEntry.UpdateScore(GetLeaderboardPosition());
+            _leaderboardEntry.SetRound(_round);
         }
 
         private void MoveToSphere()
@@ -234,6 +250,15 @@ namespace Interaction.Cars
             blocked = true;
             yield return new WaitForSeconds(1.5f);
             blocked = false;
+        }
+
+        public int GetLeaderboardPosition()
+        {
+            var score = _round * 2500000;
+            score += _nextWaypoint * 100000;
+            score += 1000 - (int)Vector3.Distance(transform.position, _waypoints[_nextWaypoint].transform.position);
+            
+            return score;
         }
     }
 }

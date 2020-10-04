@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Data;
 using Interaction.Cars;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,13 +22,17 @@ namespace Interaction
         public LayerMask layerMaskPlayer4;
         public TextMeshProUGUI roundCounter;
         public TextMeshProUGUI roundTitle;
+        public GameObject leaderboardPlayerPrefab;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
         private readonly List<LocalCar> _cars = new List<LocalCar>();
+        private Leaderboard _leaderboard;
 
         private void Start()
         {
+            _leaderboard = DiContainer.Instance.GetByName<Leaderboard>("Leaderboard");
+            
             InitPlayers();
             SpawnCars();
             StartCoroutine(StartRound());
@@ -80,6 +85,14 @@ namespace Interaction
                 var waypoints = SpawnWaypoints();
                 localCar.Init(player.Value, waypoints);
                 localCar.SetName(id + 1);
+                
+                var entry = Instantiate(leaderboardPlayerPrefab);
+                var component = entry.GetComponent<LeaderboardPlayer>();
+                
+                component.SetData(player.Key + 1, player.Key + 1);
+                _leaderboard.Add(component);
+                
+                localCar.SetLeaderboardEntry(component);
                 
                 _cars.Add(localCar);
 
