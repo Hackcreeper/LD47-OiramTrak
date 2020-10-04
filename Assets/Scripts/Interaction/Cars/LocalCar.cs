@@ -54,14 +54,14 @@ namespace Interaction.Cars
         {
             _player = player;
             _playerInput.SwitchCurrentControlScheme(_player.Device);
-            
+
             resetWarning.text = player.Type == ControlType.Keyboard
                 ? "Press <b>[R]</b> to reset"
                 : "Press <b>[Y]</b> to reset";
 
             _waypoints = waypoints;
             sphere.gameObject.layer = gameObject.layer;
-            
+
             EnableActiveWaypoint();
         }
 
@@ -69,15 +69,20 @@ namespace Interaction.Cars
         {
             _leaderboardEntry = entry;
         }
-        
+
         private void EnableActiveWaypoint()
+        {
+            DisableAllWaypoints();
+
+            _waypoints[_nextWaypoint].SetActive(true);
+        }
+
+        private void DisableAllWaypoints()
         {
             foreach (var waypoint in _waypoints)
             {
                 waypoint.SetActive(false);
             }
-
-            _waypoints[_nextWaypoint].SetActive(true);
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -119,17 +124,17 @@ namespace Interaction.Cars
 
             StartCoroutine(Block());
         }
-        
+
         private void Update()
         {
             CalculateScore();
-            
+
             if (blocked)
             {
                 MoveToSphere();
                 return;
             }
-            
+
             HandleInput();
             HandleWarning();
 
@@ -184,17 +189,18 @@ namespace Interaction.Cars
             if (blocked)
             {
                 sphere.velocity = Vector3.zero;
-                sphere.angularVelocity = Vector3.zero; 
+                sphere.angularVelocity = Vector3.zero;
                 return;
             }
-            
+
             CheckTrack();
             Move();
         }
 
         private void CheckTrack()
         {
-            var hitTrack = trackRaySources.Any(source => Physics.Raycast(source.position, -transform.up, out _, groundRayLength * 10, trackMask));
+            var hitTrack = trackRaySources.Any(source =>
+                Physics.Raycast(source.position, -transform.up, out _, groundRayLength * 10, trackMask));
 
             if (!hitTrack)
             {
@@ -242,7 +248,15 @@ namespace Interaction.Cars
         public void CheckedWaypoint()
         {
             _nextWaypoint++;
-            EnableActiveWaypoint();
+
+            if (_nextWaypoint >= _waypoints.Length)
+            {
+                DisableAllWaypoints();
+            }
+            else
+            {
+                EnableActiveWaypoint();
+            }
         }
 
         public IEnumerator Block()
@@ -256,9 +270,26 @@ namespace Interaction.Cars
         {
             var score = _round * 2500000;
             score += _nextWaypoint * 100000;
-            score += 1000 - (int)Vector3.Distance(transform.position, _waypoints[_nextWaypoint].transform.position);
-            
+
+            if (_nextWaypoint < _waypoints.Length)
+            {
+                score += 1000 -
+                         (int) Vector3.Distance(transform.position, _waypoints[_nextWaypoint].transform.position);
+            }
+
             return score;
+        }
+
+        public void NextRound()
+        {
+            if (_nextWaypoint < _waypoints.Length)
+            {
+                return;
+            }
+            
+            _round++;
+            _nextWaypoint = 0;
+            EnableActiveWaypoint();
         }
     }
 }

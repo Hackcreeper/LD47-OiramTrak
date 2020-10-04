@@ -6,15 +6,20 @@ namespace Interaction
     public class CarSphere : MonoBehaviour
     {
         private LocalCar _car;
-        
+
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag("Checkpoint"))
+            if (other.CompareTag("Checkpoint"))
             {
+                _car.CheckedWaypoint();
                 return;
             }
             
-            _car.CheckedWaypoint();
+            if (other.CompareTag("Goal"))
+            {
+                _car.NextRound();
+                return;
+            }
         }
 
         public void RegisterPlayer(LocalCar car)

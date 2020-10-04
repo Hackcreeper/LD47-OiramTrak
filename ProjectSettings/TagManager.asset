@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CarSpawner
   - Checkpoint
+  - Goal
   layers:
   - Default
   - TransparentFX
