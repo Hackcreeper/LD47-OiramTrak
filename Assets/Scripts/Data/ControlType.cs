@@ -3,6 +3,7 @@ namespace Data
     public enum ControlType
     {
         Keyboard,
-        Controller
+        Controller,
+        Bot
     }
 }

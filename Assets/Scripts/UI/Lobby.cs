@@ -15,6 +15,7 @@ namespace UI
         public RectTransform playerBoxParent;
         public Button startGameButton;
         public Slider roundsSlider;
+        public Slider botSlider;
 
         private readonly Dictionary<int, PlayerInfo> _players = new Dictionary<int, PlayerInfo>();
         private readonly List<LobbyPlayerBox> _playerBoxes = new List<LobbyPlayerBox>();
@@ -71,6 +72,18 @@ namespace UI
 
         public void StartGame()
         {
+            var bots = (int) botSlider.value;
+            var lastId = _players.Last().Key;
+            
+            for (var i = 0; i < bots; i++)
+            {
+                _players.Add(++lastId, new PlayerInfo(
+                    null,
+                    ControlType.Bot,
+                    false
+                ));
+            }
+            
             DiContainer.Instance.Register("players", _players);
             DiContainer.Instance.Register("rounds", (int)roundsSlider.value);
             SceneManager.LoadScene("Game");
