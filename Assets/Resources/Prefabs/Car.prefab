@@ -222,10 +222,13 @@ MonoBehaviour:
   gravityForce: 10
   groundMask:
     serializedVersion: 2
-    m_Bits: 1536
+    m_Bits: 525824
   trackMask:
     serializedVersion: 2
     m_Bits: 1024
+  waterMask:
+    serializedVersion: 2
+    m_Bits: 524288
   groundRayLength: 0.5
   trackRaySources:
   - {fileID: 6368106720670444421}

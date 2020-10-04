@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Data;
@@ -5,6 +6,7 @@ using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 namespace Interaction.Cars
 {
@@ -18,6 +20,7 @@ namespace Interaction.Cars
         public float gravityForce = 10f;
         public LayerMask groundMask;
         public LayerMask trackMask;
+        public LayerMask waterMask;
         public float groundRayLength = .5f;
         public Transform[] trackRaySources;
         public float dragGrounded = 3f;
@@ -33,6 +36,7 @@ namespace Interaction.Cars
         private float _speedInput;
         private float _turnInput;
         private bool _grounded;
+        private bool _onWater = false;
         private float _warningTimer = 2f;
         private GameObject[] _waypoints;
         private int _nextWaypoint = 0;
@@ -203,8 +207,9 @@ namespace Interaction.Cars
             if (_grounded)
             {
                 var direction = forwardMovement < 0 ? -1 : 1;
-                
-                _turnInput = _movement.x * turnStrength * Time.deltaTime * Mathf.Clamp(sphere.velocity.sqrMagnitude, -1, 1) * direction;
+
+                _turnInput = _movement.x * turnStrength * Time.deltaTime *
+                             Mathf.Clamp(sphere.velocity.sqrMagnitude, -1, 1) * direction;
                 transform.rotation = Quaternion.Euler(
                     transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
                 );
@@ -221,6 +226,7 @@ namespace Interaction.Cars
             }
 
             CheckTrack();
+            CheckWater();
             Move();
         }
 
@@ -240,6 +246,32 @@ namespace Interaction.Cars
             else
             {
                 _warningTimer = 2f;
+            }
+        }
+
+        private void CheckWater()
+        {
+            _onWater = true;
+            
+            foreach (var source in trackRaySources)
+            {
+                RaycastHit hit;
+
+                if (Physics.Raycast(source.position, -transform.up, out hit, groundRayLength * 10, groundMask))
+                {
+                    Debug.Log(hit.collider.name);
+                    if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Ground_Water"))
+                    {
+                        _onWater = false;
+                        break;
+                    }
+                }
+            }
+            ;
+
+            if (_onWater)
+            {
+                _speedInput *= 0f;
             }
         }
 
@@ -324,7 +356,7 @@ namespace Interaction.Cars
             }
 
             var maxRounds = DiContainer.Instance.GetByName<int>("rounds");
-            
+
             if (_round == maxRounds)
             {
                 _finished = true;
