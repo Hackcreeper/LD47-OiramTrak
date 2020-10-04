@@ -23,6 +23,15 @@ namespace Interaction
         public TextMeshProUGUI roundCounter;
         public TextMeshProUGUI roundTitle;
         public GameObject leaderboardPlayerPrefab;
+        public MeshRenderer lightsRenderer;
+        public Material inactiveLight;
+        public Material startMaterial;
+        public Material redLightMaterial;
+        public Material yellowLightMaterial;
+        public Material greenLightMaterial;
+        public GameObject redLight;
+        public GameObject yellowLight;
+        public GameObject greenLight;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
@@ -44,12 +53,46 @@ namespace Interaction
             yield return new WaitForSeconds(1);
             
             roundCounter.text = "2";
+            redLight.SetActive(true);
+
+            lightsRenderer.materials = new[]
+            {
+                startMaterial,
+                inactiveLight,
+                inactiveLight,
+                redLightMaterial
+            };
+            
             yield return new WaitForSeconds(1);
             
             roundCounter.text = "1";
+            
+            redLight.SetActive(false);
+            yellowLight.SetActive(true);
+
+            lightsRenderer.materials = new[]
+            {
+                startMaterial,
+                inactiveLight,
+                yellowLightMaterial,
+                inactiveLight
+            };
+            
             yield return new WaitForSeconds(1);
 
             roundCounter.text = "Go!";
+            
+            yellowLight.SetActive(false);
+            greenLight.SetActive(true);
+
+            lightsRenderer.materials = new[]
+            {
+                startMaterial,
+                greenLightMaterial,
+                inactiveLight,
+                inactiveLight
+            };
+            
             _cars.ForEach(car => car.blocked = false);
 
             var alpha = roundCounter.color.a;
