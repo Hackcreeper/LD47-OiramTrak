@@ -74,7 +74,10 @@ namespace UI
         public void UpdateScore(int score)
         {
             Score = score;
-            _leaderboard.Sort();
+            if (_leaderboard)
+            {
+                _leaderboard.Sort();
+            }
         }
 
         public void Lock()

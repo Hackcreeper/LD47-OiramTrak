@@ -236,6 +236,7 @@ MonoBehaviour:
   dragGrounded: 3
   resetWarning: {fileID: 6440515260292445736}
   blocked: 1
+  carRenderer: {fileID: 6456724562128750679}
 --- !u!114 &1039284122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1154,5 +1155,10 @@ PrefabInstance:
 --- !u!4 &3550305005048466700 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: aa6651fa7120de1488c72a547540b43a, type: 3}
+  m_PrefabInstance: {fileID: 3949532533909744359}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6456724562128750679 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1200936981120376144, guid: aa6651fa7120de1488c72a547540b43a, type: 3}
   m_PrefabInstance: {fileID: 3949532533909744359}
   m_PrefabAsset: {fileID: 0}

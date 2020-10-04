@@ -23,6 +23,7 @@ namespace Interaction.Cars
         public float dragGrounded = 3f;
         public TextMeshPro resetWarning;
         public bool blocked = true;
+        public MeshRenderer carRenderer;
 
         private PlayerInput _playerInput;
         private PlayerInfo _player;
@@ -49,6 +50,18 @@ namespace Interaction.Cars
         {
             sphere.transform.parent = null;
             sphere.GetComponent<CarSphere>().RegisterPlayer(this);
+
+            carRenderer.material.color = new Color(
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f)
+            );
+            
+            carRenderer.materials[2].color = new Color(
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f)
+            );
         }
 
         public void Init(PlayerInfo player, GameObject[] waypoints)
