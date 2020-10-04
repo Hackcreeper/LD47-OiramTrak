@@ -4,9 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - CarSpawner
-  - Checkpoint
   - Goal
+  - Checkpoint
+  - CarSpawner
   layers:
   - Default
   - TransparentFX
@@ -36,7 +36,7 @@ TagManager:
   - Player6_Car
   - Player7_Car
   - Player8_Car
-  - 
+  - PostProcessing
   - 
   - 
   - 
