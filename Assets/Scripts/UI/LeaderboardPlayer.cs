@@ -10,11 +10,13 @@ namespace UI
         public TextMeshProUGUI positionLabel;
         public TextMeshProUGUI nameLabel;
         public int Score { get; private set; }
+        public float NeededTime { get; private set; }
+
+        public int PlayerId { get; private set; }
 
         private Leaderboard _leaderboard;
         private int _round;
         private int _position;
-        private int _playerId;
 
         private void Start()
         {
@@ -38,7 +40,7 @@ namespace UI
         public void SetData(int position, int playerId)
         {
             _position = position;
-            _playerId = playerId;
+            PlayerId = playerId;
 
             Render();
         }
@@ -66,7 +68,7 @@ namespace UI
             }
 
             positionLabel.text = positionString;
-            nameLabel.text = $"Player {_playerId}   ({_round}/3)";
+            nameLabel.text = $"Player {PlayerId}   ({_round}/3)";
         }
 
         public void UpdateScore(int score)
@@ -82,6 +84,11 @@ namespace UI
 
             Score += FinishScore;
             FinishScore -= 50000;
+        }
+
+        public void SetTime(float time)
+        {
+            NeededTime = time;
         }
     }
 }

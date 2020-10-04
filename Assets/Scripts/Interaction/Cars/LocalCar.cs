@@ -39,6 +39,7 @@ namespace Interaction.Cars
         private int _round = 1;
         private LeaderboardPlayer _leaderboardEntry;
         private bool _finished = false;
+        private float _time = 0f;
 
         private void Awake()
         {
@@ -128,7 +129,11 @@ namespace Interaction.Cars
 
         private void Update()
         {
-            CalculateScore();
+            if (!_finished)
+            {
+                _time += Time.deltaTime;
+                CalculateScore();
+            }
 
             if (blocked || _finished)
             {
@@ -146,6 +151,7 @@ namespace Interaction.Cars
         {
             _leaderboardEntry.UpdateScore(GetLeaderboardPosition());
             _leaderboardEntry.SetRound(_round);
+            _leaderboardEntry.SetTime(_time);
         }
 
         private void MoveToSphere()
@@ -295,7 +301,8 @@ namespace Interaction.Cars
                 DisableAllWaypoints();
                 _leaderboardEntry.Lock();
                 
-                // Lock in leader board
+                DiContainer.Instance.GetByName<GameFlow>("Game").CheckFinish();
+                
                 return;
             }
             

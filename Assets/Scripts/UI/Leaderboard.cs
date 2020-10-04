@@ -20,6 +20,8 @@ namespace UI
             player.transform.SetParent(transform, false);
         }
 
+        public List<LeaderboardPlayer> GetEntries() => _entries;
+        
         public void Sort()
         {
             _entries.Sort((r1, r2) => r2.Score.CompareTo(r1.Score));

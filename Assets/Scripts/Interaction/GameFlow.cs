@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 using Interaction.Cars;
 using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Interaction
 {
@@ -32,12 +35,21 @@ namespace Interaction
         public GameObject redLight;
         public GameObject yellowLight;
         public GameObject greenLight;
+        public GameObject winScreen;
+        public GameObject largeLeaderboardPlayerPrefab;
+        public Transform largeLeaderboard;
+        public VerticalLayoutGroup verticalLayoutGroup;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
         private readonly List<LocalCar> _cars = new List<LocalCar>();
         private Leaderboard _leaderboard;
 
+        private void Awake()
+        {
+            DiContainer.Instance.Register("Game", this);
+        }
+        
         private void Start()
         {
             _leaderboard = DiContainer.Instance.GetByName<Leaderboard>("Leaderboard");
@@ -224,6 +236,32 @@ namespace Interaction
             }
 
             _players = players;
+        }
+
+        public void CheckFinish()
+        {
+            if (!_cars.All(car => car.IsFinished()))
+            {
+                return;
+            }
+
+            winScreen.SetActive(true);
+            
+            // Create all leaderboard entries
+            _leaderboard.GetEntries().ForEach(entry =>
+            {
+                var lead = Instantiate(largeLeaderboardPlayerPrefab, largeLeaderboard, false);
+                var component = lead.GetComponent<LargeLeaderboardPlayer>();
+
+                var seconds = Mathf.FloorToInt(entry.NeededTime);
+                var minutes = Mathf.FloorToInt(seconds / 60f);
+                seconds -= minutes * 60;
+
+                component.positionLabel.text = entry.positionLabel.text;
+                component.nameLabel.text = $"Player {entry.PlayerId} ({minutes}:{seconds})";
+            });
+            
+            verticalLayoutGroup.CalculateLayoutInputVertical();
         }
     }
 }
