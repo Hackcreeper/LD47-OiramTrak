@@ -218,7 +218,7 @@ MonoBehaviour:
   sphere: {fileID: 3442721216795301680}
   forwardAcceleration: 7
   reverseAcceleration: 6
-  turnStrength: 180
+  turnStrength: 120
   gravityForce: 10
   groundMask:
     serializedVersion: 2

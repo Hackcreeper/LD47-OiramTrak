@@ -56,7 +56,7 @@ namespace Interaction.Cars
                 Random.Range(0f, 1f),
                 Random.Range(0f, 1f)
             );
-            
+
             carRenderer.materials[2].color = new Color(
                 Random.Range(0f, 1f),
                 Random.Range(0f, 1f),
@@ -202,7 +202,9 @@ namespace Interaction.Cars
 
             if (_grounded)
             {
-                _turnInput = _movement.x * turnStrength * Time.deltaTime * forwardMovement;
+                var direction = forwardMovement < 0 ? -1 : 1;
+                
+                _turnInput = _movement.x * turnStrength * Time.deltaTime * Mathf.Clamp(sphere.velocity.sqrMagnitude, -1, 1) * direction;
                 transform.rotation = Quaternion.Euler(
                     transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
                 );
