@@ -19,7 +19,6 @@ namespace Interaction.Cars
         public LayerMask groundMask;
         public LayerMask trackMask;
         public float groundRayLength = .5f;
-        public Transform groundRaySource;
         public Transform[] trackRaySources;
         public float dragGrounded = 3f;
         public TextMeshPro resetWarning;
@@ -36,7 +35,7 @@ namespace Interaction.Cars
         private float _warningTimer = 2f;
         private GameObject[] _waypoints;
         private int _nextWaypoint = 0;
-        private int _round = 3;
+        private int _round = 1;
         private LeaderboardPlayer _leaderboardEntry;
         private bool _finished = false;
         private float _time = 0f;
@@ -232,15 +231,24 @@ namespace Interaction.Cars
         private void Move()
         {
             _grounded = false;
-            RaycastHit hit;
 
-            if (Physics.Raycast(groundRaySource.position, -transform.up, out hit, groundRayLength, groundMask))
+            foreach (var source in trackRaySources)
             {
+                RaycastHit hit;
+
+                if (!Physics.Raycast(source.position, -transform.up, out hit, groundRayLength, groundMask))
+                {
+                    continue;
+                }
+
                 _grounded = true;
                 transform.rotation = Quaternion.FromToRotation(
                     transform.up, hit.normal
                 ) * transform.rotation;
+
+                break;
             }
+
 
             if (_grounded)
             {
@@ -295,10 +303,10 @@ namespace Interaction.Cars
 
         public void NextRound()
         {
-            // if (_nextWaypoint < _waypoints.Length)
-            // {
-            //     return;
-            // }
+            if (_nextWaypoint < _waypoints.Length)
+            {
+                return;
+            }
 
             if (_round == 3)
             {
