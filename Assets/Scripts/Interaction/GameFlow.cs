@@ -7,7 +7,6 @@ using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Interaction
@@ -225,6 +224,8 @@ namespace Interaction
             if (players == null)
             {
                 Debug.Log("You sneaky boi! Just started the game in editor right?! RIGHT?!");
+                
+                DiContainer.Instance.Register("rounds", 1);
 
                 players = new Dictionary<int, PlayerInfo>
                 {
