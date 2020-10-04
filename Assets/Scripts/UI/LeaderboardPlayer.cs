@@ -67,8 +67,10 @@ namespace UI
                     break;
             }
 
+            var maxRounds = DiContainer.Instance.GetByName<int>("rounds");
+            
             positionLabel.text = positionString;
-            nameLabel.text = $"Player {PlayerId}   ({_round}/3)";
+            nameLabel.text = $"Player {PlayerId}   ({_round}/{maxRounds})";
         }
 
         public void UpdateScore(int score)

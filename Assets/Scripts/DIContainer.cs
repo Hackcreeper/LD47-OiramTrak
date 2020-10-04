@@ -15,6 +15,12 @@ public class DiContainer
     
     public void Register<T>(string name, T obj)
     {
+        if (_registeredByName.ContainsKey(name))
+        {
+            _registeredByName[name] = obj;
+            return;
+        }
+        
         _registeredByName.Add(name, obj);
     }
 

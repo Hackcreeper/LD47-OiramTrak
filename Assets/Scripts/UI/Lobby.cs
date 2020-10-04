@@ -14,6 +14,7 @@ namespace UI
         public GameObject playerBoxPrefab;
         public RectTransform playerBoxParent;
         public Button startGameButton;
+        public Slider roundsSlider;
 
         private readonly Dictionary<int, PlayerInfo> _players = new Dictionary<int, PlayerInfo>();
         private readonly List<LobbyPlayerBox> _playerBoxes = new List<LobbyPlayerBox>();
@@ -71,6 +72,7 @@ namespace UI
         public void StartGame()
         {
             DiContainer.Instance.Register("players", _players);
+            DiContainer.Instance.Register("rounds", (int)roundsSlider.value);
             SceneManager.LoadScene("Game");
         }
     }

@@ -323,7 +323,9 @@ namespace Interaction.Cars
                 return;
             }
 
-            if (_round == 3)
+            var maxRounds = DiContainer.Instance.GetByName<int>("rounds");
+            
+            if (_round == maxRounds)
             {
                 _finished = true;
                 _movement = Vector2.zero;
