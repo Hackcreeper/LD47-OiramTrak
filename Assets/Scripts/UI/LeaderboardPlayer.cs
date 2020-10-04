@@ -5,6 +5,8 @@ namespace UI
 {
     public class LeaderboardPlayer : MonoBehaviour
     {
+        public static int FinishScore = 1000000;
+        
         public TextMeshProUGUI positionLabel;
         public TextMeshProUGUI nameLabel;
         public int Score { get; private set; }
@@ -71,6 +73,15 @@ namespace UI
         {
             Score = score;
             _leaderboard.Sort();
+        }
+
+        public void Lock()
+        {
+            positionLabel.color = Color.yellow;
+            nameLabel.color = Color.yellow;
+
+            Score += FinishScore;
+            FinishScore -= 50000;
         }
     }
 }

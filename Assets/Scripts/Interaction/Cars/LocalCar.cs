@@ -38,6 +38,7 @@ namespace Interaction.Cars
         private int _nextWaypoint = 0;
         private int _round = 1;
         private LeaderboardPlayer _leaderboardEntry;
+        private bool _finished = false;
 
         private void Awake()
         {
@@ -106,7 +107,7 @@ namespace Interaction.Cars
         // ReSharper disable once UnusedMember.Global
         public void OnReset(InputAction.CallbackContext context)
         {
-            if (!context.started || blocked)
+            if (!context.started || blocked || _finished)
             {
                 return;
             }
@@ -129,7 +130,7 @@ namespace Interaction.Cars
         {
             CalculateScore();
 
-            if (blocked)
+            if (blocked || _finished)
             {
                 MoveToSphere();
                 return;
@@ -286,10 +287,23 @@ namespace Interaction.Cars
             {
                 return;
             }
+
+            if (_round == 3)
+            {
+                _finished = true;
+                _movement = Vector2.zero;
+                DisableAllWaypoints();
+                _leaderboardEntry.Lock();
+                
+                // Lock in leader board
+                return;
+            }
             
             _round++;
             _nextWaypoint = 0;
             EnableActiveWaypoint();
         }
+
+        public bool IsFinished() => _finished;
     }
 }
