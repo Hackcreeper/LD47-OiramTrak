@@ -162,5 +162,17 @@ namespace Interaction.Cars
             yield return new WaitForSeconds(5f);
             forwardAcceleration /= 0.7f;
         }
+
+        protected override void OnNewItem()
+        {
+            StartCoroutine(ActivateItem(Random.Range(0.5f, 6f)));
+        }
+
+        private IEnumerator ActivateItem(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            
+            CurrentItem.Activate(this);
+        }
     }
 }
