@@ -3,7 +3,47 @@ guid: c145e2c0d273af64ab07bf40e59d979d
 ModelImporter:
   serializedVersion: 20101
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: blue
+    second: {fileID: 2100000, guid: 8b8401fc09ce842cfbb4cc3ad0879dbc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: center light
+    second: {fileID: 2100000, guid: 4b0524d9b9b74442a8d4e353d5414ec5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gras
+    second: {fileID: 2100000, guid: 1464e0b1530544fe59253f6913508b1e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: left light
+    second: {fileID: 2100000, guid: a12e24b76d4a04d2bbae9692e86c3349, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: right light
+    second: {fileID: 2100000, guid: 171769ab2e10a4d7a8287f0759154d98, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: standart
+    second: {fileID: 2100000, guid: 0e691a581544f4a968b08cce89b6c135, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: start
+    second: {fileID: 2100000, guid: 81c5caa496ed74f069a2a4a7d7323b73, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: track_
+    second: {fileID: 2100000, guid: 4c7da692caaf0454ca4cf02c5b486764, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
