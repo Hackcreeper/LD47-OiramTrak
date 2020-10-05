@@ -3,6 +3,8 @@ using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UI;
 
 namespace Interaction.Cars
 {
@@ -10,6 +12,10 @@ namespace Interaction.Cars
     {
         public Camera mainCamera;
         public TextMeshPro resetWarning;
+        public GameObject activeItemUi;
+        public Image activeItemIcon;
+        public GameObject activeOverlay;
+        public PostProcessVolume postProcessVolume;
         
         private PlayerInput _playerInput;
         private float _warningTimer = 2f;
@@ -70,6 +76,18 @@ namespace Interaction.Cars
             DiContainer.Instance.GetByName<WinScreen>("Win").OnRestart(context);
         }
 
+        // ReSharper disable once UnusedMember.Global
+        public void OnUseItem(InputAction.CallbackContext context)
+        {
+            if (!context.started || CurrentItem == null)
+            {
+                return;
+            }
+
+            activeOverlay.SetActive(true);
+            CurrentItem.Activate(this);
+        }
+
         protected override void Update()
         {
             if (Player.Type == ControlType.Controller)
@@ -98,7 +116,7 @@ namespace Interaction.Cars
             
             if (!hitTrack)
             {
-                _warningTimer -= UnityEngine.Time.fixedDeltaTime;
+                _warningTimer -= Time.fixedDeltaTime;
             }
             else
             {
@@ -106,6 +124,18 @@ namespace Interaction.Cars
             }
 
             return hitTrack;
+        }
+
+        protected override void OnNewItem()
+        {
+            activeItemUi.SetActive(true);
+            activeItemIcon.sprite = CurrentItem.GetIcon();
+        }
+
+        protected override void OnRemoveItem()
+        {
+            activeOverlay.SetActive(false);
+            activeItemUi.SetActive(false);
         }
     }
 }

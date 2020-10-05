@@ -2,7 +2,7 @@
 
 public class DiContainer
 {
-    public static DiContainer Instance => DiContainer._instance != null ? DiContainer._instance : new DiContainer();
+    public static DiContainer Instance => _instance != null ? _instance : new DiContainer();
 
     private static DiContainer _instance;
 
