@@ -10,6 +10,8 @@ namespace Interaction.Cars
         private NavMeshPath _path;
         private float _inactiveTimer = 0f;
         private bool _waitForGravity = false;
+        private float _timeSinceLastWaypoint = 0f;
+        
         private void Awake()
         {
             _path = new NavMeshPath();;
@@ -29,6 +31,17 @@ namespace Interaction.Cars
                 _inactiveTimer -= Time.deltaTime;
                 base.Update();
                 return;
+            }
+
+            if (!Finished)
+            {
+                _timeSinceLastWaypoint += Time.deltaTime;
+                if (_timeSinceLastWaypoint >= 25f )
+                {
+                    _timeSinceLastWaypoint = 0;
+                    ResetPosition();
+                    return;
+                }   
             }
 
             if (_waitForGravity)
@@ -161,6 +174,25 @@ namespace Interaction.Cars
             forwardAcceleration *= 0.7f;
             yield return new WaitForSeconds(5f);
             forwardAcceleration /= 0.7f;
+        }
+
+        protected override void OnNewItem()
+        {
+            StartCoroutine(ActivateItem(Random.Range(0.5f, 6f)));
+        }
+
+        private IEnumerator ActivateItem(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            
+            CurrentItem.Activate(this);
+        }
+
+        public override void CheckedWaypoint()
+        {
+            base.CheckedWaypoint();
+
+            _timeSinceLastWaypoint = 0f;
         }
     }
 }

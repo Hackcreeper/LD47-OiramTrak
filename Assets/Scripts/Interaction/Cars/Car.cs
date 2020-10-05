@@ -254,7 +254,7 @@ namespace Interaction.Cars
                 transform.rotation = Quaternion.FromToRotation(
                     transform.up, hit.normal
                 ) * transform.rotation;
-
+                
                 break;
             }
 
@@ -275,7 +275,7 @@ namespace Interaction.Cars
             }
         }
 
-        public void CheckedWaypoint()
+        public virtual void CheckedWaypoint()
         {
             NextWaypoint++;
 
@@ -328,7 +328,7 @@ namespace Interaction.Cars
 
                 DiContainer.Instance.GetByName<GameFlow>("Game").CheckFinish();
                 OnFinish();
-                
+
                 return;
             }
 
@@ -339,7 +339,6 @@ namespace Interaction.Cars
 
         protected virtual void OnFinish()
         {
-            
         }
 
         public bool IsFinished() => Finished;
