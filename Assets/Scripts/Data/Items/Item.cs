@@ -8,6 +8,8 @@ namespace Data.Items
         public abstract Sprite GetIcon();
         public abstract void Activate(Car car);
 
+        public abstract AudioClip GetAudio();
+
         public abstract void Collect(Car car);
 
         public abstract void OnTick(Car car);

@@ -22,6 +22,8 @@ namespace Data.Items
             car.ClearItem();
         }
 
+        public override AudioClip GetAudio() =>  DiContainer.Instance.GetByName<ItemData>("itemData").trapAudio;
+
         public override void Collect(Car car)
         {
             

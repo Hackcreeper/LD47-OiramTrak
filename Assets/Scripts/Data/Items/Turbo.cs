@@ -10,7 +10,7 @@ namespace Data.Items
         private float activeTimer = 3f;
 
         public override Sprite GetIcon() => DiContainer.Instance.GetByName<ItemData>("itemData").turbo;
-        
+
         public override void Activate(Car car)
         {
             if (active)
@@ -25,7 +25,6 @@ namespace Data.Items
 
         public override void Collect(Car car)
         {
-            
         }
 
         public override void OnTick(Car car)
@@ -36,18 +35,20 @@ namespace Data.Items
             }
 
             activeTimer -= Time.deltaTime;
-            
+
             if (activeTimer > 0)
             {
                 return;
             }
-            
+
             car.forwardAcceleration /= 1.3f;
             car.reverseAcceleration /= 1.3f;
-            
+
             active = false;
-            
+
             car.ClearItem();
         }
+
+        public override AudioClip GetAudio() => null;
     }
 }

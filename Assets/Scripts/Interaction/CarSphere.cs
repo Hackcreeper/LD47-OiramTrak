@@ -1,11 +1,12 @@
-﻿using System.Security.Cryptography;
-using Interaction.Cars;
+﻿using Interaction.Cars;
 using UnityEngine;
 
 namespace Interaction
 {
     public class CarSphere : MonoBehaviour
     {
+        public AudioSource trapSound;
+        
         private Car _car;
 
         private void OnTriggerEnter(Collider other)
@@ -35,6 +36,8 @@ namespace Interaction
                     return;
                 }
                 
+                trapSound.Play();
+                
                 Destroy(other.gameObject);
                 _car.Hit();
                 return;
@@ -46,7 +49,9 @@ namespace Interaction
                 {
                     return;
                 }
-                
+
+                trapSound.Play();
+
                 Destroy(other.gameObject);
                 _car.Hit();
                 return;

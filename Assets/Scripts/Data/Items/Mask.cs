@@ -14,14 +14,20 @@ namespace Data.Items
 
         public override void Activate(Car car)
         {
-            DiContainer.Instance.GetByName<GameFlow>("Game")
+            var game = DiContainer.Instance.GetByName<GameFlow>("Game");
+            
+            game
                 .Cars
                 .Where(c => c != car)
                 .ToList()
                 .ForEach(c => c.EnableMask());
             
+            game.PlayMaskSound();
+            
             car.ClearItem();
         }
+
+        public override AudioClip GetAudio() =>  null;
 
         public override void Collect(Car car)
         {

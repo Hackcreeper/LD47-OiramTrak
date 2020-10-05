@@ -44,6 +44,7 @@ namespace Interaction
         public VerticalLayoutGroup verticalLayoutGroup;
         public readonly List<Car> Cars = new List<Car>();
         public AudioSource readySound;
+        public AudioSource maskSound;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
@@ -283,6 +284,11 @@ namespace Interaction
             });
 
             verticalLayoutGroup.CalculateLayoutInputVertical();
+        }
+
+        public void PlayMaskSound()
+        {
+            maskSound.Play();
         }
     }
 }
