@@ -40,6 +40,7 @@ namespace Interaction.Cars
         private LeaderboardPlayer _boardEntry;
         private float _time;
         private Animator _animator;
+        private float _immunity;
 
         protected virtual void Start()
         {
@@ -124,6 +125,11 @@ namespace Interaction.Cars
                 _time += Time.deltaTime;
                 CalculateScore();
 
+                if (_immunity > 0)
+                {
+                    _immunity -= Time.deltaTime;
+                }
+                
                 CurrentItem?.OnTick(this);
             }
 
@@ -384,5 +390,12 @@ namespace Interaction.Cars
             yield return new WaitForSeconds(1.5f);
             blocked = false;
         }
+
+        public void Immune()
+        {
+            _immunity = 1f;
+        }
+
+        public bool IsImmune() => _immunity > 0f;
     }
 }

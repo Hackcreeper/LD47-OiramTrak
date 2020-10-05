@@ -9,6 +9,7 @@ TagManager:
   - CarSpawner
   - ItemPickup
   - Bullet
+  - Trap
   layers:
   - Default
   - TransparentFX
@@ -39,7 +40,7 @@ TagManager:
   - Player7_Car
   - Player8_Car
   - PostProcessing
-  - 
+  - Trap
   - 
   - 
   m_SortingLayers:

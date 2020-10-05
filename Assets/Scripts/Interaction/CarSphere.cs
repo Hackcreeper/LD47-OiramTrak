@@ -1,4 +1,5 @@
-﻿using Interaction.Cars;
+﻿using System.Security.Cryptography;
+using Interaction.Cars;
 using UnityEngine;
 
 namespace Interaction
@@ -24,6 +25,7 @@ namespace Interaction
             if (other.CompareTag("ItemPickup"))
             {
                 _car.GetRandomItem(other.GetComponent<ItemPickup>());
+                return;
             }
 
             if (other.CompareTag("Bullet"))
@@ -35,6 +37,19 @@ namespace Interaction
                 
                 Destroy(other.gameObject);
                 _car.Hit();
+                return;
+            }
+
+            if (other.CompareTag("Trap"))
+            {
+                if (_car.IsImmune())
+                {
+                    return;
+                }
+                
+                Destroy(other.gameObject);
+                _car.Hit();
+                return;
             }
         }
 
