@@ -31,12 +31,13 @@ namespace Interaction
         public MeshRenderer lightsRenderer;
         public Material inactiveLight;
         public Material startMaterial;
+        public Material whiteMaterial;
         public Material redLightMaterial;
         public Material yellowLightMaterial;
         public Material greenLightMaterial;
-        public GameObject redLight;
-        public GameObject yellowLight;
-        public GameObject greenLight;
+        public GameObject[] redLights;
+        public GameObject[] yellowLights;
+        public GameObject[] greenLights;
         public GameObject winScreen;
         public GameObject largeLeaderboardPlayerPrefab;
         public Transform largeLeaderboard;
@@ -67,44 +68,47 @@ namespace Interaction
             yield return new WaitForSeconds(1);
 
             roundCounter.text = "2";
-            redLight.SetActive(true);
+            redLights.ToList().ForEach(l => l.SetActive(true));
 
             lightsRenderer.materials = new[]
             {
                 startMaterial,
                 inactiveLight,
                 inactiveLight,
-                redLightMaterial
+                redLightMaterial,
+                whiteMaterial
             };
 
             yield return new WaitForSeconds(1);
 
             roundCounter.text = "1";
 
-            redLight.SetActive(false);
-            yellowLight.SetActive(true);
+            redLights.ToList().ForEach(l => l.SetActive(false));
+            yellowLights.ToList().ForEach(l => l.SetActive(true));
 
             lightsRenderer.materials = new[]
             {
                 startMaterial,
                 inactiveLight,
                 yellowLightMaterial,
-                inactiveLight
+                inactiveLight,
+                whiteMaterial
             };
 
             yield return new WaitForSeconds(1);
 
             roundCounter.text = "Go!";
 
-            yellowLight.SetActive(false);
-            greenLight.SetActive(true);
+            yellowLights.ToList().ForEach(l => l.SetActive(false));
+            greenLights.ToList().ForEach(l => l.SetActive(true));
 
             lightsRenderer.materials = new[]
             {
                 startMaterial,
                 greenLightMaterial,
                 inactiveLight,
-                inactiveLight
+                inactiveLight,
+                whiteMaterial
             };
 
             _cars.ForEach(car => car.blocked = false);
