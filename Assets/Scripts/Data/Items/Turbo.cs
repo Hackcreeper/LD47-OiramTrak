@@ -21,11 +21,6 @@ namespace Data.Items
             active = true;
             car.forwardAcceleration *= 1.3f;
             car.reverseAcceleration *= 1.3f;
-
-            if (car.GetComponent<LocalCar>() != null)
-            {
-                car.GetComponent<LocalCar>().postProcessVolume.profile = DiContainer.Instance.GetByName<ItemData>("itemData").turboProfile;
-            }
         }
 
         public override void Collect(Car car)
@@ -51,11 +46,6 @@ namespace Data.Items
             car.reverseAcceleration /= 1.3f;
             
             active = false;
-                
-            if (car.GetComponent<LocalCar>() != null)
-            {
-                car.GetComponent<LocalCar>().postProcessVolume.profile = null;
-            }
             
             car.ClearItem();
         }

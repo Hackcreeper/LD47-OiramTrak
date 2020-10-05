@@ -14,13 +14,12 @@ namespace Data.Items
         
         public static Item GetRandomItem()
         {
-            return new Trap();
-            
             var possible = new Item[]
             {
                 new Turbo(),
                 new Canon(),
                 new Trap(), 
+                new Mask(),
             };
 
             return possible[Random.Range(0, possible.Length)];

@@ -155,5 +155,12 @@ namespace Interaction.Cars
             ResetPosition();
             _waitForGravity = false;
         }
+
+        protected override IEnumerator HandleMask()
+        {
+            forwardAcceleration *= 0.7f;
+            yield return new WaitForSeconds(5f);
+            forwardAcceleration /= 0.7f;
+        }
     }
 }
