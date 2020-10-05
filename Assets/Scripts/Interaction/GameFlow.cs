@@ -43,6 +43,7 @@ namespace Interaction
         public Transform largeLeaderboard;
         public VerticalLayoutGroup verticalLayoutGroup;
         public readonly List<Car> Cars = new List<Car>();
+        public AudioSource readySound;
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
@@ -67,6 +68,7 @@ namespace Interaction
             roundCounter.text = "3";
             yield return new WaitForSeconds(1);
 
+            readySound.Play();
             roundCounter.text = "2";
             redLights.ToList().ForEach(l => l.SetActive(true));
 
