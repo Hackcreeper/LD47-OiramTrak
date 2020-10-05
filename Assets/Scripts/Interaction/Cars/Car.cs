@@ -40,6 +40,7 @@ namespace Interaction.Cars
         private LeaderboardPlayer _boardEntry;
         private float _time;
         private Animator _animator;
+        private float _immunity;
 
         protected virtual void Start()
         {
@@ -123,6 +124,11 @@ namespace Interaction.Cars
             {
                 _time += Time.deltaTime;
                 CalculateScore();
+
+                if (_immunity > 0)
+                {
+                    _immunity -= Time.deltaTime;
+                }
 
                 CurrentItem?.OnTick(this);
             }
@@ -341,7 +347,7 @@ namespace Interaction.Cars
 
             pickup.Taken();
             CurrentItem = Item.GetRandomItem();
-            
+
             CurrentItem.Collect(this);
 
             OnNewItem();
@@ -350,14 +356,14 @@ namespace Interaction.Cars
         public void ClearItem()
         {
             CurrentItem = null;
-            
+
             OnRemoveItem();
         }
 
         protected virtual void OnNewItem()
         {
         }
-        
+
         protected virtual void OnRemoveItem()
         {
         }
@@ -377,12 +383,29 @@ namespace Interaction.Cars
         {
             // Then we need to start a rotation of the model itself
             _animator.SetBool("spinning", true);
-            
+
             yield return new WaitForEndOfFrame();
             _animator.SetBool("spinning", false);
 
             yield return new WaitForSeconds(1.5f);
             blocked = false;
+        }
+
+        public void Immune()
+        {
+            _immunity = 1f;
+        }
+
+        public bool IsImmune() => _immunity > 0f;
+
+        public void EnableMask()
+        {
+            StartCoroutine(HandleMask());
+        }
+
+        protected virtual IEnumerator HandleMask()
+        {
+            yield break;
         }
     }
 }

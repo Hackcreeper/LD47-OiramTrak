@@ -1,9 +1,9 @@
+using System.Collections;
 using Data;
 using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
 namespace Interaction.Cars
@@ -15,7 +15,7 @@ namespace Interaction.Cars
         public GameObject activeItemUi;
         public Image activeItemIcon;
         public GameObject activeOverlay;
-        public PostProcessVolume postProcessVolume;
+        public GameObject mask;
         
         private PlayerInput _playerInput;
         private float _warningTimer = 2f;
@@ -136,6 +136,13 @@ namespace Interaction.Cars
         {
             activeOverlay.SetActive(false);
             activeItemUi.SetActive(false);
+        }
+
+        protected override IEnumerator HandleMask()
+        {
+            mask.SetActive(true);
+            yield return new WaitForSeconds(5f);
+            mask.SetActive(false);
         }
     }
 }

@@ -78,7 +78,6 @@ namespace Interaction.Cars
             });
             
             Movement.y = Mathf.Clamp(Movement.y - a, 0.5f, 1f);
-            Movement.y = 0;
             
             transform.LookAt(corner);
 
@@ -155,6 +154,13 @@ namespace Interaction.Cars
             
             ResetPosition();
             _waitForGravity = false;
+        }
+
+        protected override IEnumerator HandleMask()
+        {
+            forwardAcceleration *= 0.7f;
+            yield return new WaitForSeconds(5f);
+            forwardAcceleration /= 0.7f;
         }
     }
 }

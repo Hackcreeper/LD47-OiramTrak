@@ -18,6 +18,8 @@ namespace Data.Items
             {
                 new Turbo(),
                 new Canon(),
+                new Trap(), 
+                new Mask(),
             };
 
             return possible[Random.Range(0, possible.Length)];

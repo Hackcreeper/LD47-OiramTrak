@@ -27,7 +27,7 @@ namespace Data.Items
             if (target == null)
             {
                 target = cars.Where(c => c != car)
-                    .OrderBy(c => c.GetLeaderboardPosition())
+                    .OrderByDescending(c => c.GetLeaderboardPosition())
                     .FirstOrDefault();
             }
 
