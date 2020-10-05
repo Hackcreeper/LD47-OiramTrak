@@ -28,6 +28,11 @@ namespace Data.Items
             }
         }
 
+        public override void Collect(Car car)
+        {
+            
+        }
+
         public override void OnTick(Car car)
         {
             if (!active)

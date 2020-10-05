@@ -42,10 +42,10 @@ namespace Interaction
         public GameObject largeLeaderboardPlayerPrefab;
         public Transform largeLeaderboard;
         public VerticalLayoutGroup verticalLayoutGroup;
+        public readonly List<Car> Cars = new List<Car>();
 
         private Dictionary<int, PlayerInfo> _players;
         private GameObject[] _carSpawners;
-        private readonly List<Car> _cars = new List<Car>();
         private Leaderboard _leaderboard;
 
         private void Awake()
@@ -111,7 +111,7 @@ namespace Interaction
                 whiteMaterial
             };
 
-            _cars.ForEach(car => car.blocked = false);
+            Cars.ForEach(car => car.blocked = false);
 
             var alpha = roundCounter.color.a;
             while (alpha > 0f)
@@ -158,7 +158,7 @@ namespace Interaction
 
                 carComp.SetLeaderboardEntry(component);
 
-                _cars.Add(carComp);
+                Cars.Add(carComp);
 
                 if (player.Value.IsPlayer)
                 {
@@ -258,7 +258,7 @@ namespace Interaction
 
         public void CheckFinish()
         {
-            if (!_cars.All(car => car.IsFinished()))
+            if (!Cars.All(car => car.IsFinished()))
             {
                 return;
             }
