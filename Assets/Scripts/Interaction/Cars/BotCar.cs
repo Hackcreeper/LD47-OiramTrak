@@ -78,6 +78,7 @@ namespace Interaction.Cars
             });
             
             Movement.y = Mathf.Clamp(Movement.y - a, 0.5f, 1f);
+            Movement.y = 0;
             
             transform.LookAt(corner);
 

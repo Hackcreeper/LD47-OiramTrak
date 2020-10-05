@@ -25,6 +25,17 @@ namespace Interaction
             {
                 _car.GetRandomItem(other.GetComponent<ItemPickup>());
             }
+
+            if (other.CompareTag("Bullet"))
+            {
+                if (other.GetComponent<Bullet>().Owner == _car)
+                {
+                    return;
+                }
+                
+                Destroy(other.gameObject);
+                _car.Hit();
+            }
         }
 
         public void RegisterPlayer(Car car)

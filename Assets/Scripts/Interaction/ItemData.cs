@@ -7,6 +7,8 @@ namespace Interaction
     {
         public Sprite turbo;
         public PostProcessProfile turboProfile;
+        public Sprite canon;
+        public GameObject bulletPrefab;
         
         private void Awake()
         {

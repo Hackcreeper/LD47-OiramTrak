@@ -23,6 +23,8 @@ namespace Interaction.Cars
         public float dragGrounded = 3f;
         public bool blocked = true;
         public MeshRenderer carRenderer;
+        public GameObject canon;
+        public GameObject canonShot;
 
         protected PlayerInfo Player;
         protected Vector2 Movement;
@@ -37,9 +39,12 @@ namespace Interaction.Cars
         private int _round = 1;
         private LeaderboardPlayer _boardEntry;
         private float _time;
+        private Animator _animator;
 
         protected virtual void Start()
         {
+            _animator = GetComponent<Animator>();
+
             sphere.transform.parent = null;
             sphere.GetComponent<CarSphere>().RegisterPlayer(this);
 
@@ -336,6 +341,8 @@ namespace Interaction.Cars
 
             pickup.Taken();
             CurrentItem = Item.GetRandomItem();
+            
+            CurrentItem.Collect(this);
 
             OnNewItem();
         }
@@ -353,6 +360,29 @@ namespace Interaction.Cars
         
         protected virtual void OnRemoveItem()
         {
+        }
+
+        public void Hit()
+        {
+            if (blocked || Finished)
+            {
+                return;
+            }
+
+            blocked = true;
+            StartCoroutine(SpinMeRoundAndRound());
+        }
+
+        private IEnumerator SpinMeRoundAndRound()
+        {
+            // Then we need to start a rotation of the model itself
+            _animator.SetBool("spinning", true);
+            
+            yield return new WaitForEndOfFrame();
+            _animator.SetBool("spinning", false);
+
+            yield return new WaitForSeconds(1.5f);
+            blocked = false;
         }
     }
 }

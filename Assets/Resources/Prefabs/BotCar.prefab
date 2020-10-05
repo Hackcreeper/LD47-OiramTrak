@@ -34,6 +34,8 @@ MonoBehaviour:
   dragGrounded: 3
   blocked: 1
   carRenderer: {fileID: 250560761486165231}
+  canon: {fileID: 5250066403442049559}
+  canonShot: {fileID: 1369571606845967398}
 --- !u!1001 &6548461907759697080
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52,6 +54,22 @@ PrefabInstance:
     - target: {fileID: 1298070472060521831, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
       propertyPath: m_Name
       value: BotCar
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274971625826222243, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274971625826222243, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274971625826222243, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6274971625826222243, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8366794849776275525, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -122,6 +140,11 @@ Rigidbody:
   m_CorrespondingSourceObject: {fileID: 3442721216795301680, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
   m_PrefabInstance: {fileID: 6548461907759697080}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5250066403442049559 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1313701969441967791, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+  m_PrefabInstance: {fileID: 6548461907759697080}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &250560761486165231 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6456724562128750679, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
@@ -150,5 +173,10 @@ Transform:
 --- !u!4 &1757665888952176986 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4793154608713260514, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+  m_PrefabInstance: {fileID: 6548461907759697080}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1369571606845967398 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5323674181054906526, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
   m_PrefabInstance: {fileID: 6548461907759697080}
   m_PrefabAsset: {fileID: 0}
