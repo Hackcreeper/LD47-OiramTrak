@@ -42,6 +42,8 @@ namespace Data.Items
             car.ClearItem();
         }
 
+        public override AudioClip GetAudio() =>  DiContainer.Instance.GetByName<ItemData>("itemData").canonAudio;
+
         public override void Collect(Car car)
         {
             car.canon.SetActive(true);

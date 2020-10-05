@@ -16,6 +16,8 @@ namespace Interaction.Cars
         public Image activeItemIcon;
         public GameObject activeOverlay;
         public GameObject mask;
+        public AudioSource finishSound;
+        public AudioSource itemSound;
         
         private PlayerInput _playerInput;
         private float _warningTimer = 2f;
@@ -84,6 +86,12 @@ namespace Interaction.Cars
                 return;
             }
 
+            if (CurrentItem.GetAudio() != null)
+            {
+                itemSound.clip = CurrentItem.GetAudio();
+                itemSound.Play();
+            }
+            
             activeOverlay.SetActive(true);
             CurrentItem.Activate(this);
         }
@@ -143,6 +151,11 @@ namespace Interaction.Cars
             mask.SetActive(true);
             yield return new WaitForSeconds(5f);
             mask.SetActive(false);
+        }
+        
+        protected override void OnFinish()
+        {
+            finishSound.Play();
         }
     }
 }

@@ -55,6 +55,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BotCar
       objectReference: {fileID: 0}
+    - target: {fileID: 4272504833275202135, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6274971625826222243, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
@@ -71,6 +75,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6761675510002129587, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: d919581a612a2484ca8348a899d0306c, type: 3}
     - target: {fileID: 8366794849776275525, guid: 99fa3e241874348148972657a4d0e2b3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

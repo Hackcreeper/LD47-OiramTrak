@@ -327,13 +327,19 @@ namespace Interaction.Cars
                 _boardEntry.Lock();
 
                 DiContainer.Instance.GetByName<GameFlow>("Game").CheckFinish();
-
+                OnFinish();
+                
                 return;
             }
 
             _round++;
             NextWaypoint = 0;
             EnableActiveWaypoint();
+        }
+
+        protected virtual void OnFinish()
+        {
+            
         }
 
         public bool IsFinished() => Finished;
