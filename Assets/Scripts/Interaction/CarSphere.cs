@@ -18,6 +18,12 @@ namespace Interaction
             if (other.CompareTag("Goal"))
             {
                 _car.NextRound();
+                return;
+            }
+
+            if (other.CompareTag("ItemPickup"))
+            {
+                _car.GetRandomItem(other.GetComponent<ItemPickup>());
             }
         }
 

@@ -7,6 +7,7 @@ TagManager:
   - Goal
   - Checkpoint
   - CarSpawner
+  - ItemPickup
   layers:
   - Default
   - TransparentFX

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Data;
+using Data.Items;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -28,7 +29,8 @@ namespace Interaction.Cars
         protected bool Finished;
         protected GameObject[] Waypoints;
         protected int NextWaypoint;
-        
+        protected Item CurrentItem;
+
         private float _speedInput;
         private float _turnInput;
         private bool _grounded;
@@ -85,7 +87,7 @@ namespace Interaction.Cars
         public void SetName(int id)
         {
             var playerName = Player.IsPlayer ? "Player" : "Bot";
-            
+
             nameTag.text = $"{playerName} {id}";
         }
 
@@ -106,7 +108,7 @@ namespace Interaction.Cars
             sphere.transform.position = position + new Vector3(0, 2, 0);
             transform.rotation = Waypoints[NextWaypoint - 1].transform.rotation;
             transform.Rotate(0, 90, 0);
-            
+
             StartCoroutine(Block());
         }
 
@@ -114,8 +116,10 @@ namespace Interaction.Cars
         {
             if (!Finished)
             {
-                _time += UnityEngine.Time.deltaTime;
+                _time += Time.deltaTime;
                 CalculateScore();
+
+                CurrentItem?.OnTick(this);
             }
 
             if (blocked || Finished)
@@ -160,8 +164,8 @@ namespace Interaction.Cars
 
             var direction = Movement.y < 0 ? -1 : 1;
 
-            _turnInput = Movement.x * turnStrength * UnityEngine.Time.deltaTime *
-                        Mathf.Clamp(sphere.velocity.sqrMagnitude, -1, 1) * direction;
+            _turnInput = Movement.x * turnStrength * Time.deltaTime *
+                         Mathf.Clamp(sphere.velocity.sqrMagnitude, -1, 1) * direction;
             transform.rotation = Quaternion.Euler(
                 transform.rotation.eulerAngles + new Vector3(0f, _turnInput, 0f)
             );
@@ -193,11 +197,11 @@ namespace Interaction.Cars
 
             return hitTrack;
         }
-        
+
         private void CheckWater()
         {
             var onWater = true;
-            
+
             foreach (var source in trackRaySources)
             {
                 RaycastHit hit;
@@ -211,17 +215,17 @@ namespace Interaction.Cars
                 {
                     continue;
                 }
-                
+
                 onWater = false;
                 break;
             }
-            
+
             if (onWater)
             {
                 _speedInput *= 0f;
             }
         }
-        
+
         private void Move()
         {
             _grounded = false;
@@ -259,7 +263,7 @@ namespace Interaction.Cars
                 sphere.AddForce(Vector3.up * -gravityForce * 100f);
             }
         }
-        
+
         public void CheckedWaypoint()
         {
             NextWaypoint++;
@@ -280,7 +284,7 @@ namespace Interaction.Cars
             yield return new WaitForSeconds(1.5f);
             blocked = false;
         }
-        
+
         public int GetLeaderboardPosition()
         {
             var score = _round * 2500000;
@@ -294,7 +298,7 @@ namespace Interaction.Cars
 
             return score;
         }
-        
+
         public void NextRound()
         {
             if (NextWaypoint < Waypoints.Length)
@@ -320,7 +324,35 @@ namespace Interaction.Cars
             NextWaypoint = 0;
             EnableActiveWaypoint();
         }
-        
+
         public bool IsFinished() => Finished;
+
+        public void GetRandomItem(ItemPickup pickup)
+        {
+            if (!pickup.IsActive() || CurrentItem != null)
+            {
+                return;
+            }
+
+            pickup.Taken();
+            CurrentItem = Item.GetRandomItem();
+
+            OnNewItem();
+        }
+
+        public void ClearItem()
+        {
+            CurrentItem = null;
+            
+            OnRemoveItem();
+        }
+
+        protected virtual void OnNewItem()
+        {
+        }
+        
+        protected virtual void OnRemoveItem()
+        {
+        }
     }
 }
